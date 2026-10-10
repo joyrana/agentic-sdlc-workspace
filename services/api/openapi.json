@@ -2498,6 +2498,867 @@
         }
       }
     },
+    "/api/v1/projects/{project_id}/runs": {
+      "post": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "Start Run",
+        "operationId": "start_run_api_v1_projects__project_id__runs_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "List Runs",
+        "operationId": "list_runs_api_v1_projects__project_id__runs_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RunOut"
+                  },
+                  "title": "Response List Runs Api V1 Projects  Project Id  Runs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "Get Run",
+        "operationId": "get_run_api_v1_projects__project_id__runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/runs/{run_id}/cancel": {
+      "post": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "Cancel",
+        "operationId": "cancel_api_v1_projects__project_id__runs__run_id__cancel_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunCancel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/approvals": {
+      "get": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "List Approvals",
+        "operationId": "list_approvals_api_v1_projects__project_id__approvals_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "pending",
+                "all"
+              ],
+              "type": "string",
+              "default": "pending",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprovalOut"
+                  },
+                  "title": "Response List Approvals Api V1 Projects  Project Id  Approvals Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/approvals/{request_id}/decision": {
+      "post": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "Decide",
+        "operationId": "decide_api_v1_projects__project_id__approvals__request_id__decision_post",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/architecture": {
+      "get": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "List Proposals",
+        "operationId": "list_proposals_api_v1_projects__project_id__architecture_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProposalOut"
+                  },
+                  "title": "Response List Proposals Api V1 Projects  Project Id  Architecture Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/architecture/{proposal_id}": {
+      "get": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "Get Proposal",
+        "operationId": "get_proposal_api_v1_projects__project_id__architecture__proposal_id__get",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Proposal Api V1 Projects  Project Id  Architecture  Proposal Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "Edit Proposal",
+        "operationId": "edit_proposal_api_v1_projects__project_id__architecture__proposal_id__patch",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalEdit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/implementation-plans/{plan_id}/scope": {
+      "patch": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "Narrow Scope",
+        "operationId": "narrow_scope_api_v1_projects__project_id__implementation_plans__plan_id__scope_patch",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanScopeEdit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Narrow Scope Api V1 Projects  Project Id  Implementation Plans  Plan Id  Scope Patch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/adrs": {
+      "get": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "List Adrs",
+        "operationId": "list_adrs_api_v1_projects__project_id__adrs_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response List Adrs Api V1 Projects  Project Id  Adrs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/approvals/{request_id}/decision-record": {
+      "get": {
+        "tags": [
+          "workflow"
+        ],
+        "summary": "Decision Record",
+        "operationId": "decision_record_api_v1_projects__project_id__approvals__request_id__decision_record_get",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Decision Record Api V1 Projects  Project Id  Approvals  Request Id  Decision Record Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/skills": {
       "get": {
         "tags": [
@@ -2660,6 +3521,235 @@
   },
   "components": {
     "schemas": {
+      "AgentRunOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "agent": {
+            "type": "string",
+            "title": "Agent"
+          },
+          "skill_id": {
+            "type": "string",
+            "title": "Skill Id"
+          },
+          "skill_version": {
+            "type": "string",
+            "title": "Skill Version"
+          },
+          "strategy": {
+            "type": "string",
+            "title": "Strategy"
+          },
+          "model_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Ref"
+          },
+          "is_mock": {
+            "type": "boolean",
+            "title": "Is Mock"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "duration_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Ms"
+          },
+          "routing": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Routing"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "stage",
+          "agent",
+          "skill_id",
+          "skill_version",
+          "strategy",
+          "model_ref",
+          "is_mock",
+          "status",
+          "attempts",
+          "duration_ms",
+          "routing",
+          "error",
+          "created_at"
+        ],
+        "title": "AgentRunOut"
+      },
+      "ApprovalOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "gate": {
+            "type": "string",
+            "title": "Gate"
+          },
+          "requested_action": {
+            "type": "string",
+            "title": "Requested Action"
+          },
+          "artifact_type": {
+            "type": "string",
+            "title": "Artifact Type"
+          },
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Artifact Id"
+          },
+          "artifact_version": {
+            "type": "integer",
+            "title": "Artifact Version"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "required_roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Roles"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "can_decide": {
+            "type": "boolean",
+            "title": "Can Decide"
+          },
+          "cannot_decide_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cannot Decide Reason"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "run_id",
+          "gate",
+          "requested_action",
+          "artifact_type",
+          "artifact_id",
+          "artifact_version",
+          "content_hash",
+          "required_roles",
+          "status",
+          "expires_at",
+          "created_at",
+          "can_decide",
+          "cannot_decide_reason",
+          "decision"
+        ],
+        "title": "ApprovalOut"
+      },
       "AuditOut": {
         "properties": {
           "id": {
@@ -3223,6 +4313,30 @@
           "expected_version"
         ],
         "title": "CriterionUpdate"
+      },
+      "DecisionIn": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "rejected",
+              "changes_requested"
+            ],
+            "title": "Decision"
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Comment",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "DecisionIn"
       },
       "DependencyCreate": {
         "properties": {
@@ -3885,6 +4999,35 @@
         ],
         "title": "Page[ProjectOut]"
       },
+      "PlanScopeEdit": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "title": "Expected Version"
+          },
+          "remove": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Remove"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "expected_version",
+          "remove",
+          "reason"
+        ],
+        "title": "PlanScopeEdit"
+      },
       "ProjectCreate": {
         "properties": {
           "name": {
@@ -4156,6 +5299,90 @@
           "expected_version"
         ],
         "title": "ProjectUpdate"
+      },
+      "ProposalEdit": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "title": "Expected Version"
+          },
+          "content": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "expected_version",
+          "content"
+        ],
+        "title": "ProposalEdit"
+      },
+      "ProposalOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "content": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Content"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "generated_by": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Generated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "run_id",
+          "title",
+          "status",
+          "version",
+          "content",
+          "content_hash",
+          "generated_by",
+          "updated_at"
+        ],
+        "title": "ProposalOut"
       },
       "QuestionOut": {
         "properties": {
@@ -4754,6 +5981,300 @@
           "created_at"
         ],
         "title": "RevisionOut"
+      },
+      "RunCancel": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "RunCancel"
+      },
+      "RunCreate": {
+        "properties": {
+          "repository_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Repository Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "repository_id"
+        ],
+        "title": "RunCreate"
+      },
+      "RunDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "definition": {
+            "type": "string",
+            "title": "Definition"
+          },
+          "definition_version": {
+            "type": "integer",
+            "title": "Definition Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "current_stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Stage"
+          },
+          "config": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Config"
+          },
+          "input_artifacts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Input Artifacts"
+          },
+          "counters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Counters"
+          },
+          "outcome": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Outcome"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "created_by": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Created By"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "agent_runs": {
+            "items": {
+              "$ref": "#/components/schemas/AgentRunOut"
+            },
+            "type": "array",
+            "title": "Agent Runs"
+          },
+          "tool_invocations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tool Invocations"
+          },
+          "timeline": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Timeline"
+          },
+          "approvals": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Approvals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "definition",
+          "definition_version",
+          "status",
+          "current_stage",
+          "config",
+          "input_artifacts",
+          "counters",
+          "outcome",
+          "error",
+          "created_by",
+          "started_at",
+          "finished_at",
+          "created_at",
+          "agent_runs",
+          "tool_invocations",
+          "timeline",
+          "approvals"
+        ],
+        "title": "RunDetail"
+      },
+      "RunOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "definition": {
+            "type": "string",
+            "title": "Definition"
+          },
+          "definition_version": {
+            "type": "integer",
+            "title": "Definition Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "current_stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Stage"
+          },
+          "config": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Config"
+          },
+          "input_artifacts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Input Artifacts"
+          },
+          "counters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Counters"
+          },
+          "outcome": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Outcome"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "created_by": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Created By"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "definition",
+          "definition_version",
+          "status",
+          "current_stage",
+          "config",
+          "input_artifacts",
+          "counters",
+          "outcome",
+          "error",
+          "created_by",
+          "started_at",
+          "finished_at",
+          "created_at"
+        ],
+        "title": "RunOut"
       },
       "SystemInfo": {
         "properties": {

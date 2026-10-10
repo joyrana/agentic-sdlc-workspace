@@ -16,8 +16,8 @@ import {
 } from "@fluentui/react-components";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { api, unwrap } from "../api/client";
+import { useOutletContext, useParams } from "react-router-dom";
+import { api, unwrap, type Schemas } from "../api/client";
 import { useAuth } from "../auth";
 import { ErrorNotice, Loading, PageHeader, SampleBadge } from "../components/common";
 
@@ -32,6 +32,84 @@ const useStyles = makeStyles({
   },
   form: { display: "flex", gap: tokens.spacingHorizontalM, alignItems: "flex-end", flexWrap: "wrap" },
 });
+
+const LIMITS: { key: string; label: string; hint: string }[] = [
+  {
+    key: "max_repair_attempts",
+    label: "Repair attempts",
+    hint: "Defect → fix cycles before a person takes over",
+  },
+  {
+    key: "max_architecture_revisions",
+    label: "Architecture revisions",
+    hint: "Change requests before escalation",
+  },
+  { key: "max_model_calls", label: "Model calls per run", hint: "Across all agents" },
+  { key: "max_tokens", label: "Tokens per run", hint: "Input plus output" },
+  { key: "max_cost_usd", label: "Cost per run (USD)", hint: "Self-hosted models report 0" },
+  { key: "max_wall_clock_s", label: "Active time per run (s)", hint: "Excludes time waiting for people" },
+];
+
+function LimitsForm({ projectId }: { projectId: string }) {
+  const s = useStyles();
+  const qc = useQueryClient();
+  const { project } = useOutletContext<Schemas["ProjectSummary"]>();
+  const { rolesIn } = useAuth();
+  const [values, setValues] = useState<Record<string, string>>(
+    Object.fromEntries(Object.entries(project.limits ?? {}).map(([k, v]) => [k, String(v)])),
+  );
+  const save = useMutation({
+    mutationFn: () =>
+      unwrap(
+        api.PATCH("/api/v1/projects/{project_id}", {
+          params: { path: { project_id: projectId } },
+          body: {
+            expected_version: project.version,
+            limits: Object.fromEntries(
+              Object.entries(values)
+                .filter(([, v]) => v.trim() !== "")
+                .map(([k, v]) => [k, Number(v)]),
+            ),
+          },
+        }),
+      ),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["project", projectId] }),
+  });
+  const canEdit = rolesIn(projectId).includes("project_owner");
+  return (
+    <section className={s.section} aria-labelledby="limits-h">
+      <Text as="h2" id="limits-h" size={400} weight="semibold">
+        Workflow limits
+      </Text>
+      <Text>Empty fields use the workspace defaults. Exceeding a limit escalates the run to a person.</Text>
+      <form
+        className={s.form}
+        onSubmit={(e) => {
+          e.preventDefault();
+          save.mutate();
+        }}
+      >
+        {LIMITS.map((l) => (
+          <Field key={l.key} label={l.label} hint={l.hint}>
+            <Input
+              type="number"
+              min={0}
+              value={values[l.key] ?? ""}
+              disabled={!canEdit}
+              onChange={(_, d) => setValues((v) => ({ ...v, [l.key]: d.value }))}
+            />
+          </Field>
+        ))}
+        {canEdit && (
+          <Button type="submit" disabled={save.isPending}>
+            Save limits
+          </Button>
+        )}
+      </form>
+      {save.error && <ErrorNotice error={save.error} />}
+    </section>
+  );
+}
 
 export function ProjectSettings() {
   const s = useStyles();
@@ -72,7 +150,10 @@ export function ProjectSettings() {
 
   return (
     <>
-      <PageHeader title="Settings" description="People, roles and repositories for this project." />
+      <PageHeader
+        title="Settings"
+        description="People, roles, repositories and workflow limits for this project."
+      />
       <section className={s.section} aria-labelledby="members-h">
         <Text as="h2" id="members-h" size={400} weight="semibold">
           Members
@@ -180,6 +261,7 @@ export function ProjectSettings() {
         )}
         {addRepo.error && <ErrorNotice error={addRepo.error} />}
       </section>
+      <LimitsForm projectId={projectId} />
     </>
   );
 }

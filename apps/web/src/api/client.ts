@@ -44,7 +44,11 @@ const authMiddleware: Middleware = {
   },
 };
 
-export const api = createClient<paths>({ baseUrl: "" });
+// Absolute origin keeps Request construction valid outside browsers (tests); fetch is looked up per call.
+export const api = createClient<paths>({
+  baseUrl: globalThis.location?.origin ?? "",
+  fetch: (request) => globalThis.fetch(request),
+});
 api.use(authMiddleware);
 
 type Result<T> = { data?: T; error?: unknown; response: Response };
