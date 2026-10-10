@@ -21,9 +21,9 @@ Handler = Callable[[dict[str, Any], uuid.UUID | None], None]
 
 
 def handlers() -> dict[str, Handler]:
-    from agentic_sdlc.workflows import intake
+    from agentic_sdlc.workflows import intake, planning_job
 
-    return {"intake": intake.handle}
+    return {"intake": intake.handle, "plan": planning_job.handle}
 
 
 class NonRetryable(Exception):

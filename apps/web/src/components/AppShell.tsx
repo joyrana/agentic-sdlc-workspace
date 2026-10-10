@@ -50,6 +50,11 @@ const useStyles = makeStyles({
     borderRadius: "3px",
   },
   spacer: { flexGrow: 1 },
+  navLink: {
+    color: tokens.colorNeutralForeground2,
+    textDecoration: "none",
+    ":hover": { textDecoration: "underline" },
+  },
   main: { flexGrow: 1, display: "flex", minHeight: 0 },
   skip: {
     position: "absolute",
@@ -88,6 +93,9 @@ export function AppShell() {
           </Badge>
         )}
         <span className={s.spacer} />
+        <Link to="/capabilities" className={s.navLink}>
+          Capabilities
+        </Link>
         {me && (
           <Menu>
             <MenuTrigger disableButtonEnhancement>

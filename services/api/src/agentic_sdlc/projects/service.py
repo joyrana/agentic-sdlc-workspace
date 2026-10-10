@@ -243,10 +243,11 @@ def add_repository(
             raise ValidationFailed("fixture repository not found", details={"location": location})
         stored = str(_materialize_fixture(path, repo_id))
         is_sample = True
+        fixture: str | None = path.name
     elif kind == "git":
         if not re.match(r"^https://[\w.-]+/[\w./-]+$", location):
             raise ValidationFailed("only https git URLs are accepted")
-        stored, is_sample = location, False
+        stored, is_sample, fixture = location, False, None
     else:
         raise ValidationFailed("kind must be 'fixture' or 'git'")
     repo = ProjectRepository(
@@ -257,6 +258,7 @@ def add_repository(
         location=stored,
         default_branch=default_branch,
         is_sample=is_sample,
+        fixture=fixture,
     )
     db.add(repo)
     try:

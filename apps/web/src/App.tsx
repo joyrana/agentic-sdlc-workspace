@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { useAuth } from "./auth";
 import { AppShell } from "./components/AppShell";
+import { BacklogPage } from "./pages/BacklogPage";
+import { CapabilitiesPage } from "./pages/CapabilitiesPage";
 import { Loading } from "./components/common";
 import { ProjectLayout } from "./pages/ProjectLayout";
 import { ProjectOverview } from "./pages/ProjectOverview";
@@ -16,6 +18,7 @@ const router = createBrowserRouter([
     element: <AppShell />,
     children: [
       { index: true, element: <ProjectsPage /> },
+      { path: "capabilities", element: <CapabilitiesPage /> },
       {
         path: "projects/:projectId",
         element: <ProjectLayout />,
@@ -23,6 +26,7 @@ const router = createBrowserRouter([
           { index: true, element: <ProjectOverview /> },
           { path: "sources", element: <SourcesPage /> },
           { path: "requirements", element: <RequirementsPage /> },
+          { path: "backlog", element: <BacklogPage /> },
           { path: "settings", element: <ProjectSettings /> },
         ],
       },

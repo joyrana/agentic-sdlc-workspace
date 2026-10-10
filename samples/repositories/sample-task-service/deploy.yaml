@@ -1,0 +1,8 @@
+# Deployment descriptor read by the workspace's local staging adapter (SAMPLE).
+# Commands run inside the sandbox (no network, non-root) against the deployed artifact.
+smoke:
+  - name: import-and-create
+    command: ["python", "-c", "from task_service import TaskService; t = TaskService().create_task('smoke'); assert t.id == 1; print('ok')"]
+health:
+  - name: version
+    command: ["python", "-c", "import task_service; print(task_service.__version__)"]

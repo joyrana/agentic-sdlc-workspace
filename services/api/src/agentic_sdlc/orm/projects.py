@@ -38,3 +38,5 @@ class ProjectRepository(IdMixin, TimestampMixin, Base):
     location: Mapped[str] = mapped_column(Text)  # path for fixture, URL for git
     default_branch: Mapped[str] = mapped_column(String(200), default="main")
     is_sample: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Name of the shipped fixture this repository was created from (samples/repositories/<fixture>).
+    fixture: Mapped[str | None] = mapped_column(String(200))

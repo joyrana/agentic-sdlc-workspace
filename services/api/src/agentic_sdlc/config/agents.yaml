@@ -10,7 +10,7 @@ agents:
     tools: [documents.read]
   planner:
     name: Planner Agent
-    skills: []
+    skills: [backlog-decomposition, effort-estimation, dependency-analysis]
     tools: [requirements.read, backlog.read]
   architect:
     name: Architect Agent
