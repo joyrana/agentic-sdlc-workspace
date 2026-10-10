@@ -7,5 +7,6 @@ export const PROJECT_NAV: { path: string; label: string }[] = [
   { path: "activity", label: "Agent activity" },
   { path: "architecture", label: "Architecture" },
   { path: "approvals", label: "Approvals" },
+  { path: "implementation", label: "Implementation" },
   { path: "settings", label: "Settings" },
 ];

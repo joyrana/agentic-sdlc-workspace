@@ -17,6 +17,9 @@ const BacklogPage = lazy(() => import("./pages/BacklogPage").then((m) => ({ defa
 const CapabilitiesPage = lazy(() =>
   import("./pages/CapabilitiesPage").then((m) => ({ default: m.CapabilitiesPage })),
 );
+const ImplementationPage = lazy(() =>
+  import("./pages/ImplementationPage").then((m) => ({ default: m.ImplementationPage })),
+);
 const RequirementsPage = lazy(() =>
   import("./pages/RequirementsPage").then((m) => ({ default: m.RequirementsPage })),
 );
@@ -45,6 +48,7 @@ const router = createBrowserRouter([
           { path: "activity", element: page(<ActivityPage />) },
           { path: "architecture", element: page(<ArchitecturePage />) },
           { path: "approvals", element: page(<ApprovalsPage />) },
+          { path: "implementation", element: page(<ImplementationPage />) },
           { path: "settings", element: page(<ProjectSettings />) },
         ],
       },
