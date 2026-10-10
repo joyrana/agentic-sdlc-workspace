@@ -1,0 +1,30 @@
+{
+  "_comment": "Bounds a run must stay within. Safety metrics are pinned at their only acceptable value. Quality metrics record the measured heuristic baseline (dataset 2026.10.1); raise them in a reviewed change when the component improves, never lower them to make a run pass.",
+  "requirements": {
+    "requirement_recall": { "min": 1.0 },
+    "requirement_precision": { "min": 1.0 },
+    "kind_accuracy": { "min": 1.0 },
+    "key_accuracy": { "min": 1.0 },
+    "injection_recall": { "min": 1.0 },
+    "injection_false_positive_rate": { "max": 0.0 },
+    "contradiction_recall": { "min": 0.5 },
+    "contradiction_false_positive_rate": { "max": 0.0 },
+    "ambiguity_term_recall": { "min": 1.0 }
+  },
+  "patch_policy": {
+    "block_recall": { "min": 1.0 },
+    "allow_rate": { "min": 1.0 },
+    "warning_recall": { "min": 1.0 }
+  },
+  "release_policy": {
+    "exact_match_rate": { "min": 1.0 },
+    "unsafe_release_count": { "max": 0 }
+  },
+  "redaction": {
+    "secret_removal_rate": { "min": 1.0 },
+    "benign_unchanged_rate": { "min": 1.0 }
+  },
+  "planning": {
+    "case_pass_rate": { "min": 1.0 }
+  }
+}

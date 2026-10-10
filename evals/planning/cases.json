@@ -1,0 +1,170 @@
+{
+ "dataset": "planning",
+ "version": "2026.10.1",
+ "description": "Dependency graphs (from depends on to) labelled valid/cyclic, plus requirement sets for decomposition coverage.",
+ "dependency_cases": [
+  {
+   "id": "chain",
+   "stories": [
+    "A",
+    "B",
+    "C"
+   ],
+   "deps": [
+    [
+     "B",
+     "A"
+    ],
+    [
+     "C",
+     "B"
+    ]
+   ],
+   "expect_valid": true
+  },
+  {
+   "id": "diamond",
+   "stories": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "deps": [
+    [
+     "B",
+     "A"
+    ],
+    [
+     "C",
+     "A"
+    ],
+    [
+     "D",
+     "B"
+    ],
+    [
+     "D",
+     "C"
+    ]
+   ],
+   "expect_valid": true
+  },
+  {
+   "id": "independent",
+   "stories": [
+    "A",
+    "B",
+    "C"
+   ],
+   "deps": [],
+   "expect_valid": true
+  },
+  {
+   "id": "two-cycle",
+   "stories": [
+    "A",
+    "B"
+   ],
+   "deps": [
+    [
+     "A",
+     "B"
+    ],
+    [
+     "B",
+     "A"
+    ]
+   ],
+   "expect_valid": false
+  },
+  {
+   "id": "three-cycle",
+   "stories": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "deps": [
+    [
+     "A",
+     "B"
+    ],
+    [
+     "B",
+     "C"
+    ],
+    [
+     "C",
+     "A"
+    ],
+    [
+     "D",
+     "A"
+    ]
+   ],
+   "expect_valid": false
+  },
+  {
+   "id": "self-loop",
+   "stories": [
+    "A"
+   ],
+   "deps": [
+    [
+     "A",
+     "A"
+    ]
+   ],
+   "expect_valid": false
+  }
+ ],
+ "decomposition_cases": [
+  {
+   "id": "cross-reference",
+   "requirements": [
+    {
+     "key": "FR-001",
+     "kind": "functional",
+     "title": "Create invoice",
+     "statement": "The system shall create invoices.",
+     "priority": "must",
+     "criteria": [
+      {
+       "key": "FR-001-AC1",
+       "text": "x"
+      }
+     ]
+    },
+    {
+     "key": "FR-002",
+     "kind": "functional",
+     "title": "Validate totals",
+     "statement": "Totals must be validated before saving (see FR-001).",
+     "priority": "should",
+     "criteria": [
+      {
+       "key": "FR-002-AC1",
+       "text": "y"
+      }
+     ]
+    },
+    {
+     "key": "NFR-001",
+     "kind": "non_functional",
+     "title": "Latency",
+     "statement": "Saving must take under 2 seconds.",
+     "priority": "could",
+     "criteria": []
+    }
+   ],
+   "expect_dependencies": [
+    [
+     "S-FR-002",
+     "S-FR-001"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,805 @@
+{
+ "dataset": "release_policy",
+ "version": "2026.10.1",
+ "description": "Release facts labelled with the expected eligibility and exact blocker set.",
+ "cases": [
+  {
+   "id": "all-green",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": true,
+   "expect_blockers": []
+  },
+  {
+   "id": "arch-not-approved",
+   "facts": {
+    "architecture_approval": {
+     "approved": false,
+     "status": "stale"
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "architecture approved"
+   ]
+  },
+  {
+   "id": "scope-not-approved",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": false
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "implementation scope approved"
+   ]
+  },
+  {
+   "id": "must-unverifiable",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "unverifiable"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "must-have criteria verified"
+   ]
+  },
+  {
+   "id": "should-failed",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-1",
+      "priority": "should",
+      "status": "failed"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "no failed criteria"
+   ]
+  },
+  {
+   "id": "should-unverifiable-warns-only",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-1",
+      "priority": "could",
+      "status": "unverifiable"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": true,
+   "expect_blockers": [],
+   "expect_warning": true
+  },
+  {
+   "id": "regression-on-other-commit",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c0",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "regression suite passed on release commit"
+   ]
+  },
+  {
+   "id": "regression-failed",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "failed",
+     "commit": "c1",
+     "totals": {
+      "passed": 9,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "regression suite passed on release commit"
+   ]
+  },
+  {
+   "id": "no-regression-run",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": null,
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "regression suite passed on release commit"
+   ]
+  },
+  {
+   "id": "major-defect-open",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [
+     {
+      "title": "crash",
+      "severity": "major"
+     }
+    ],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "no open critical or major defects"
+   ]
+  },
+  {
+   "id": "minor-defect-warns-only",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [
+     {
+      "title": "typo",
+      "severity": "minor"
+     }
+    ],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": true,
+   "expect_blockers": [],
+   "expect_warning": true
+  },
+  {
+   "id": "no-reviews",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "patch policy reviews passed"
+   ]
+  },
+  {
+   "id": "review-failed",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": false
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "patch policy reviews passed"
+   ]
+  },
+  {
+   "id": "scan-violation",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": false,
+     "violations": [
+      "added line looks like a credential"
+     ],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "full change scanned for credentials and scope"
+   ]
+  },
+  {
+   "id": "no-deploy-descriptor",
+   "facts": {
+    "architecture_approval": {
+     "approved": true
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": false,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "deployment descriptor present"
+   ]
+  },
+  {
+   "id": "multiple-blockers",
+   "facts": {
+    "architecture_approval": {
+     "approved": false
+    },
+    "scope_approval": {
+     "approved": true
+    },
+    "criteria": [
+     {
+      "key": "FR-001-AC1",
+      "priority": "must",
+      "status": "verified"
+     },
+     {
+      "key": "NFR-001-AC1",
+      "priority": "should",
+      "status": "verified"
+     }
+    ],
+    "regression": {
+     "status": "passed",
+     "commit": "c1",
+     "totals": {
+      "passed": 10,
+      "total": 10
+     }
+    },
+    "head_commit": "c1",
+    "open_defects": [
+     {
+      "title": "x",
+      "severity": "critical"
+     }
+    ],
+    "code_reviews": [
+     {
+      "status": "applied",
+      "ok": true
+     }
+    ],
+    "change_scan": {
+     "ok": true,
+     "violations": [],
+     "warnings": []
+    },
+    "deploy_descriptor": true,
+    "external_ci": "not configured"
+   },
+   "expect_eligible": false,
+   "expect_blockers": [
+    "architecture approved",
+    "no open critical or major defects"
+   ]
+  }
+ ]
+}

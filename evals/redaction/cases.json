@@ -1,0 +1,62 @@
+{
+ "dataset": "redaction",
+ "version": "2026.10.1",
+ "description": "Log lines with fake credentials (must be removed) and benign lines (must be unchanged).",
+ "cases": [
+  {
+   "id": "bearer",
+   "text": "Authorization: Bearer abc.def.ghi",
+   "secret": "abc.def.ghi"
+  },
+  {
+   "id": "github",
+   "text": "cloned with ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4",
+   "secret": "ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4"
+  },
+  {
+   "id": "openai-style",
+   "text": "key sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "secret": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  {
+   "id": "aws",
+   "text": "AKIAABCDEFGHIJKLMNOP leaked",
+   "secret": "AKIAABCDEFGHIJKLMNOP"
+  },
+  {
+   "id": "password-kv",
+   "text": "password=CorrectHorse9",
+   "secret": "CorrectHorse9"
+  },
+  {
+   "id": "api-key-kv",
+   "text": "api_key: \"q8w7e6r5t4\"",
+   "secret": "q8w7e6r5t4"
+  },
+  {
+   "id": "token-kv",
+   "text": "token = tkn_998877",
+   "secret": "tkn_998877"
+  },
+  {
+   "id": "pem",
+   "text": "-----BEGIN PRIVATE KEY-----\nMIIBVQ\n-----END PRIVATE KEY-----",
+   "secret": "MIIBVQ"
+  },
+  {
+   "id": "benign-1",
+   "text": "Titles must be no longer than 120 characters.",
+   "secret": null
+  },
+  {
+   "id": "benign-2",
+   "text": "The token bucket refills every second.",
+   "secret": null
+  },
+  {
+   "id": "benign-3",
+   "text": "Reset your password from the account page.",
+   "secret": null
+  }
+ ]
+}

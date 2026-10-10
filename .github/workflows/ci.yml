@@ -24,7 +24,7 @@ env:
 
 jobs:
   backend:
-    name: Backend (lint, types, tests)
+    name: Backend (lint, types, tests, evals)
     runs-on: ubuntu-24.04
     services:
       postgres:
@@ -79,6 +79,10 @@ jobs:
           if grep -q 'needs root and unshare\|needs the namespace sandbox\|sandbox toolchain missing' var/reports/pytest.xml; then
             echo "Sandbox-dependent tests were skipped in CI"; exit 1
           fi
+      - name: Offline evaluations against baselines
+        run: |
+          .venv/bin/python -m agentic_sdlc.evals.run --all --report var/reports/evals.json 2>&1 \
+            | tee var/logs/evals.log
       - name: OpenAPI document is current
         working-directory: services/api
         run: |
