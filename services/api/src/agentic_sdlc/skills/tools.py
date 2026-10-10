@@ -55,7 +55,7 @@ class ToolGateway:
         self.allowed = allowed
         self.context = context  # SkillContext; passed to tool functions
 
-    def call(self, name: str, **kwargs: Any) -> Any:
+    def call(self, name: str, /, **kwargs: Any) -> Any:
         args = redact_obj({k: (str(v) if isinstance(v, uuid.UUID) else v) for k, v in kwargs.items()})
         if name not in self.allowed or name not in _TOOLS:
             self.db.add(

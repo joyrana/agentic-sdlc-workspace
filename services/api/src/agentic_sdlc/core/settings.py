@@ -43,7 +43,11 @@ class Settings(BaseSettings):
     sandbox_masked_paths: list[str] = Field(
         default_factory=lambda: ["/root", "/etc/agentic-sdlc", "/var/lib/postgresql", "/home"]
     )
-    sandbox_python: str = "/usr/bin/python3"
+    # Toolchain available inside the sandbox (must be outside masked paths). `make sandbox-toolchain`
+    # creates /opt/asw-sandbox with pytest; container images install it into the system Python.
+    sandbox_python: str = "/opt/asw-sandbox/bin/python"
+    # Disposable workspaces live outside every masked path so the sandbox can see them.
+    workspaces_root: Path = Path("/var/tmp/asw-workspaces")  # noqa: S108 - dedicated, 0711
     sandbox_timeout_s: int = 120
     sandbox_memory_bytes: int = 2 * 1024**3
     sandbox_cpu_seconds: int = 120
@@ -83,7 +87,7 @@ class Settings(BaseSettings):
 
     @property
     def workspaces_dir(self) -> Path:
-        return self.data_dir / "workspaces"
+        return self.workspaces_root
 
     @property
     def staging_dir(self) -> Path:

@@ -63,7 +63,7 @@ The 15-step journey from the master prompt §26, mapped to concrete mechanisms:
 | 2 Documents & BA | Verified (heuristic strategy; LLM path via mock only) | `tests/integration/test_documents_requirements.py`, `tests/unit/test_extraction_rules.py`, `tests/security/test_upload_validation.py`, `tests/contract/test_skill_runtime.py` |
 | 3 Skills, planner, model registry | Verified (heuristic planning; router unit-tested) | `tests/unit/test_graph_and_planning.py`, `tests/unit/test_model_router.py`, `tests/integration/test_backlog.py` |
 | 4 Architect & approvals | Verified (backend; UI pending) | `tests/workflow/test_architecture_and_approvals.py` incl. resume in a separate worker process |
-| 5 Developer agent | Not started | — |
+| 5 Developer agent | Verified (scripted coding agent for the sample; LLM path via mock) | `tests/security/test_sandbox.py` (11 isolation tests), `tests/unit/test_patch_review.py`, `tests/workflow/test_developer_agent.py` |
 | 6 BA verification & QA | Not started | — |
 | 7 Release management | Not started | — |
 | 8 Evaluation & optimization | Not started | — |

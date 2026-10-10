@@ -1,0 +1,57 @@
+id: code-generation
+version: 1.0.0
+name: Code generation
+description: >-
+  Produce a minimal unified diff implementing approved backlog items (or repairing defects) with
+  tests. The platform reviews the patch against policy and the approved plan before applying it in an
+  isolated workspace. `scripted` replays fixture patches for sample repositories only.
+category: development
+triggers:
+  intents: [implement, repair]
+  workflow_stages: [implement]
+agents: [developer]
+required_context: [approved_plan, repository]
+postconditions: [patch_policy]
+tools: [repo.read, fixtures.read]
+strategies: [llm, scripted]
+model:
+  task: code_generation
+  capabilities: [code, structured_output]
+  expected_output_tokens: 6000
+budgets: { max_input_tokens: 30000, max_output_tokens: 8000, max_model_calls: 3 }
+timeout_s: 300
+retry: { max_attempts: 3, backoff_s: 1 }
+approval_level: none
+evaluation:
+  suite: coding
+  success_criteria: { acceptance_pass_rate: 1.0 }
+implementation: agentic_sdlc.skills_impl.delivery:CodeGeneration
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [repository_id, base_commit, attempt, task, plan_files]
+  properties:
+    repository_id: { type: string, format: uuid }
+    base_commit: { type: string, pattern: "^[0-9a-f]{40}$" }
+    attempt: { type: integer, minimum: 1, maximum: 20 }
+    task:
+      type: object
+      required: [title, items, criteria]
+      properties:
+        title: { type: string }
+        items: { type: array, items: { type: string } }
+        approach: { type: string }
+        criteria: { type: array, items: { type: object, required: [key, text] } }
+    plan_files: { type: array, items: { type: string } }
+    defects:
+      type: array
+      items: { type: object, required: [title, expected, actual] }
+output_schema:
+  type: object
+  required: [summary, diff, tests_added, notes]
+  properties:
+    summary: { type: string, minLength: 1, maxLength: 4000 }
+    diff: { type: string, minLength: 1 }
+    tests_added: { type: array, items: { type: string } }
+    notes: { type: array, items: { type: string } }

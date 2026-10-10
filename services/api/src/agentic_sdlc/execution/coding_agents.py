@@ -52,3 +52,11 @@ def select_coding_agent(decision: RoutingDecision, repo: ProjectRepository | Non
         "kind": "none",
         "reason": "no code model available and the repository has no scripted scenario",
     }
+
+
+def acceptance_suite_dir(repo: ProjectRepository) -> Path | None:
+    """QA-owned acceptance tests for a sample repository (samples/acceptance/<fixture>)."""
+    if not repo.is_sample or not repo.fixture:
+        return None
+    path = get_settings().fixtures_dir / "acceptance" / repo.fixture
+    return path if path.is_dir() else None

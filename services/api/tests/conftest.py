@@ -18,6 +18,7 @@ _TMP = Path(tempfile.mkdtemp(prefix="asw-test-"))
 os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://sdlc:sdlc@localhost:5432/sdlc_test")
 os.environ["APP_ENV"] = "test"
 os.environ["DATA_DIR"] = str(_TMP / "var")
+os.environ["WORKSPACES_ROOT"] = str(_TMP / "workspaces")
 os.environ.setdefault("RATE_LIMIT_PER_MINUTE", "100000")
 
 from alembic import command  # noqa: E402

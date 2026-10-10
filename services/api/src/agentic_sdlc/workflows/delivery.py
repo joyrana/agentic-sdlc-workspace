@@ -260,6 +260,32 @@ def stage(run_id: str, name: str) -> Iterator[tuple[Session, WorkflowRun, Budget
         yield db, run, budget
 
 
+def escalate_now(db: Session, run: WorkflowRun, stage_name: str, reason: str) -> None:
+    """Escalate inside the current transaction (keeps records written by the stage, e.g. a rejected patch)."""
+    run.status = "escalated"
+    run.current_stage = stage_name
+    run.finished_at = utcnow()
+    run.outcome = {**run.outcome, "escalation": {"stage": stage_name, "reason": reason[:2000]}}
+    audit.record(
+        db,
+        action="run.escalated",
+        actor_id=None,
+        actor_type="system",
+        project_id=run.project_id,
+        run_id=run.id,
+        target_type="workflow_run",
+        target_id=run.id,
+        details={"stage": stage_name, "reason": reason[:500]},
+    )
+    events.emit(
+        db,
+        type="run.escalated",
+        project_id=run.project_id,
+        run_id=run.id,
+        payload={"stage": stage_name, "reason": reason[:500]},
+    )
+
+
 def escalate(run_id: str, stage_name: str, reason: str) -> None:
     with session_scope() as db:
         run = db.get(WorkflowRun, uuid.UUID(run_id))
@@ -707,8 +733,10 @@ def _route(mapping: dict[str, str]) -> Callable[[DeliveryState], str]:
 
 
 def build_graph() -> StateGraph[DeliveryState]:
+    from agentic_sdlc.workflows import stages_build as build
+
     g = StateGraph(DeliveryState)
-    for fn in (
+    nodes = (
         snapshot_inputs,
         clarification_gate,
         plan_backlog,
@@ -717,8 +745,10 @@ def build_graph() -> StateGraph[DeliveryState]:
         architecture_gate,
         plan_implementation,
         implementation_gate,
+        build.implement,
         finalize,
-    ):
+    )
+    for fn in nodes:
         g.add_node(fn.__name__, cast(Any, fn))
     g.add_edge(START, "snapshot_inputs")
     g.add_conditional_edges("snapshot_inputs", _route({"ok": "clarification_gate"}))
@@ -742,8 +772,9 @@ def build_graph() -> StateGraph[DeliveryState]:
     g.add_conditional_edges("plan_implementation", _route({"ok": "implementation_gate"}))
     g.add_conditional_edges(
         "implementation_gate",
-        _route({"approved": "finalize", "wait": "implementation_gate", "rejected": END}),
+        _route({"approved": "implement", "wait": "implementation_gate", "rejected": END}),
     )
+    g.add_conditional_edges("implement", _route({"ok": "finalize"}))
     g.add_edge("finalize", END)
     return g
 
