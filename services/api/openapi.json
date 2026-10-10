@@ -3850,6 +3850,290 @@
         }
       }
     },
+    "/api/v1/projects/{project_id}/releases": {
+      "get": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "List Releases",
+        "operationId": "list_releases_api_v1_projects__project_id__releases_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response List Releases Api V1 Projects  Project Id  Releases Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/releases/{release_id}": {
+      "get": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Get Release",
+        "operationId": "get_release_api_v1_projects__project_id__releases__release_id__get",
+        "parameters": [
+          {
+            "name": "release_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Release Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Release Api V1 Projects  Project Id  Releases  Release Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/releases/{release_id}/rollback": {
+      "post": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Manual Rollback",
+        "operationId": "manual_rollback_api_v1_projects__project_id__releases__release_id__rollback_post",
+        "parameters": [
+          {
+            "name": "release_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Release Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RollbackIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Manual Rollback Api V1 Projects  Project Id  Releases  Release Id  Rollback Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/releases/{release_id}/promote": {
+      "post": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Promote To Production",
+        "description": "Production promotion is refused unless explicitly enabled and configured (policy default: off).",
+        "operationId": "promote_to_production_api_v1_projects__project_id__releases__release_id__promote_post",
+        "parameters": [
+          {
+            "name": "release_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Release Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/skills": {
       "get": {
         "tags": [
@@ -6472,6 +6756,21 @@
           "created_at"
         ],
         "title": "RevisionOut"
+      },
+      "RollbackIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "RollbackIn"
       },
       "RunCancel": {
         "properties": {
