@@ -21,9 +21,14 @@ Handler = Callable[[dict[str, Any], uuid.UUID | None], None]
 
 
 def handlers() -> dict[str, Handler]:
-    from agentic_sdlc.workflows import intake, planning_job
+    from agentic_sdlc.workflows import delivery, intake, planning_job
 
-    return {"intake": intake.handle, "plan": planning_job.handle}
+    return {
+        "intake": intake.handle,
+        "plan": planning_job.handle,
+        "delivery.start": delivery.handle_start,
+        "delivery.resume": delivery.handle_resume,
+    }
 
 
 class NonRetryable(Exception):
@@ -61,6 +66,11 @@ def process_one() -> bool:
             job2 = jobs.fail(db, job_id, f"{type(exc).__name__}: {exc}")
             if isinstance(exc, NonRetryable) and job2 is not None:
                 job2.status = "failed"
+            permanently_failed = job2 is not None and job2.status == "failed"
+        if permanently_failed:
+            from agentic_sdlc.workflows import delivery
+
+            delivery.on_job_failed(kind, payload, f"{type(exc).__name__}: {exc}")
     finally:
         correlation_id_var.reset(token)
     return True

@@ -1,0 +1,87 @@
+diff --git a/task_service/errors.py b/task_service/errors.py
+index 8b4886c..ffec6b6 100644
+--- a/task_service/errors.py
++++ b/task_service/errors.py
+@@ -1,2 +1,10 @@
+ class ValidationError(ValueError):
+-    """Raised when input to the task service is invalid."""
++    """Raised when input to the task service is invalid.
++
++    Carries the offending field name and a human-readable message.
++    """
++
++    def __init__(self, field: str, message: str) -> None:
++        super().__init__(f"{field}: {message}")
++        self.field = field
++        self.message = message
+diff --git a/task_service/service.py b/task_service/service.py
+index 5c5ece5..57273e7 100644
+--- a/task_service/service.py
++++ b/task_service/service.py
+@@ -1,6 +1,8 @@
+ from task_service.errors import ValidationError
+ from task_service.models import Task
+ 
++MAX_TITLE_LENGTH = 120
++
+ 
+ class TaskService:
+     """In-memory task store."""
+@@ -10,7 +12,14 @@ class TaskService:
+         self._next_id = 1
+ 
+     def create_task(self, title: str, description: str = "") -> Task:
+-        task = Task(id=self._next_id, title=title, description=description)
++        normalized = title.strip()
++        if not normalized:
++            raise ValidationError("title", "Title must not be empty.")
++        if len(normalized) >= MAX_TITLE_LENGTH:
++            raise ValidationError(
++                "title", f"Title must be at most {MAX_TITLE_LENGTH} characters (got {len(normalized)})."
++            )
++        task = Task(id=self._next_id, title=normalized, description=description)
+         self._tasks[task.id] = task
+         self._next_id += 1
+         return task
+@@ -20,7 +29,7 @@ class TaskService:
+ 
+     def complete_task(self, task_id: int) -> Task:
+         if task_id not in self._tasks:
+-            raise ValidationError(f"unknown task {task_id}")
++            raise ValidationError("task_id", f"Unknown task {task_id}.")
+         task = self._tasks[task_id]
+         task.done = True
+         return task
+diff --git a/tests/test_title_validation.py b/tests/test_title_validation.py
+new file mode 100644
+index 0000000..c7bc96f
+--- /dev/null
++++ b/tests/test_title_validation.py
+@@ -0,0 +1,27 @@
++import pytest
++
++from task_service import TaskService, ValidationError
++
++
++def test_rejects_title_longer_than_limit() -> None:
++    with pytest.raises(ValidationError) as err:
++        TaskService().create_task("x" * 121)
++    assert err.value.field == "title"
++
++
++def test_trims_whitespace() -> None:
++    assert TaskService().create_task("  Buy milk  ").title == "Buy milk"
++
++
++def test_rejects_blank_title() -> None:
++    with pytest.raises(ValidationError) as err:
++        TaskService().create_task("   ")
++    assert err.value.field == "title"
++    assert "empty" in err.value.message
++
++
++def test_rejected_title_is_not_stored() -> None:
++    service = TaskService()
++    with pytest.raises(ValidationError):
++        service.create_task("")
++    assert service.list_tasks() == []
