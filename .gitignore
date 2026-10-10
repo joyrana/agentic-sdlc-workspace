@@ -1,4 +1,4 @@
-.venv/
+.venv
 __pycache__/
 *.pyc
 .pytest_cache/
@@ -6,10 +6,13 @@ __pycache__/
 .ruff_cache/
 .coverage
 htmlcov/
-node_modules/
+node_modules
 dist/
 var/
 *.log
 .env
 apps/web/test-results/
 apps/web/playwright-report/
+.sandbox-venv/
+
+*.egg-info/

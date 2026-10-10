@@ -1,0 +1,52 @@
+# Local development stack: PostgreSQL, API, worker, web.
+#   docker compose up --build
+# Then open http://localhost:8080 and use a development sign-in.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: sdlc
+      POSTGRES_PASSWORD: sdlc
+      POSTGRES_DB: sdlc
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sdlc"]
+      interval: 5s
+      retries: 10
+
+  migrate:
+    build: { context: ., dockerfile: infrastructure/docker/api.Dockerfile }
+    environment: &appenv
+      DATABASE_URL: postgresql+psycopg://sdlc:sdlc@db:5432/sdlc
+      APP_ENV: development
+      CORS_ORIGINS: '["http://localhost:8080"]'
+    command: ["sh", "-c", "alembic upgrade head && agentic-sdlc seed"]
+    depends_on: { db: { condition: service_healthy } }
+
+  api:
+    build: { context: ., dockerfile: infrastructure/docker/api.Dockerfile }
+    environment: *appenv
+    volumes: [appdata:/data]
+    user: "10001"
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    ports: ["8000:8000"]
+
+  worker:
+    build: { context: ., dockerfile: infrastructure/docker/api.Dockerfile }
+    environment: *appenv
+    volumes: [appdata:/data]
+    command: ["agentic-sdlc", "worker"]
+    # The namespace sandbox needs to create mount/net/pid namespaces and switch to the sandbox uid.
+    # This grants the *worker* those privileges; sandboxed code itself runs unprivileged.
+    cap_add: [SYS_ADMIN]
+    security_opt: ["apparmor=unconfined", "seccomp=unconfined"]
+    depends_on: { migrate: { condition: service_completed_successfully } }
+
+  web:
+    build: { context: ., dockerfile: infrastructure/docker/web.Dockerfile }
+    ports: ["8080:8080"]
+    depends_on: [api]
+
+volumes:
+  pgdata:
+  appdata:
