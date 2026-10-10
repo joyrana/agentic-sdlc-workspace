@@ -1,6 +1,9 @@
-"""Developer skills.
+"""Developer, QA and BA-verification skills.
 
 - code-generation (developer): llm | scripted. Returns a unified diff; the platform reviews and applies it.
+- regression-testing (qa): runs suites in the sandbox via the `sandbox.exec` tool.
+- acceptance-verification (ba-verifier): per-criterion verdicts from recorded evidence only.
+- bug-triage (qa): turns failures into reproducible defect specifications.
 """
 
 from __future__ import annotations
@@ -73,3 +76,111 @@ class CodeGeneration(SkillImplementation):
             )
             return ctx.model.structured(CODE_PROMPT, user, ctx.manifest.output_schema)
         raise SkillOutputInvalid(f"unsupported strategy {strategy}")
+
+
+class RegressionTesting(SkillImplementation):
+    strategies: ClassVar[set[str]] = {"heuristic"}
+
+    def run(self, strategy: str, inputs: dict[str, Any], ctx: SkillContext) -> dict[str, Any]:
+        result: dict[str, Any] = ctx.tools.call(
+            "sandbox.exec",
+            repository_id=inputs["repository_id"],
+            commit=inputs["commit"],
+            suite=inputs["suite"],
+        )
+        return result
+
+
+class AcceptanceVerification(SkillImplementation):
+    """Verdict per criterion from the QA run's evidence. A developer's own tests never count."""
+
+    strategies: ClassVar[set[str]] = {"heuristic"}
+
+    def run(self, strategy: str, inputs: dict[str, Any], ctx: SkillContext) -> dict[str, Any]:
+        run = ctx.tools.call("evidence.read", kind="test_run", record_id=inputs["test_run_id"])
+        if run["suite"] not in ("acceptance", "regression"):
+            raise SkillError("verification requires an acceptance or regression run, not developer evidence")
+        change = ctx.tools.call("evidence.read", kind="code_change", record_id=inputs["code_change_id"])
+        results = []
+        for crit in inputs["criteria"]:
+            tests = [c for c in run["cases"] if crit["key"] in c.get("criteria", [])]
+            failed = [t for t in tests if t["outcome"] != "passed"]
+            gaps: list[str] = []
+            if run["status"] == "error":
+                status, confidence = "failed", 0.0
+                gaps.append("the test run itself did not complete reliably")
+            elif not tests:
+                status, confidence = "unverifiable", 0.0
+                gaps.append(
+                    "no automated acceptance test exercises this criterion; human verification needed"
+                )
+            elif failed:
+                status, confidence = "failed", 0.9
+                gaps += [f"{t['nodeid']}: {t['message']}" for t in failed]
+            else:
+                status = "verified"
+                confidence = min(0.95, 0.7 + 0.1 * len(tests))
+            if status == "verified" and run["commit"] != change["head_commit"]:
+                status, confidence = "failed", 0.0
+                gaps.append("evidence was recorded for a different commit than the change under review")
+            results.append(
+                {
+                    "key": crit["key"],
+                    "status": status,
+                    "confidence": round(confidence, 2),
+                    "gaps": gaps,
+                    "evidence": {
+                        "tests": [{"nodeid": t["nodeid"], "outcome": t["outcome"]} for t in tests],
+                        "test_run_id": inputs["test_run_id"],
+                        "commit": run["commit"],
+                        "changed_files": change["files"],
+                    },
+                }
+            )
+        summary = {
+            k: sum(1 for r in results if r["status"] == k) for k in ("verified", "failed", "unverifiable")
+        }
+        return {"results": results, "summary": summary}
+
+
+class BugTriage(SkillImplementation):
+    strategies: ClassVar[set[str]] = {"heuristic"}
+
+    def run(self, strategy: str, inputs: dict[str, Any], ctx: SkillContext) -> dict[str, Any]:
+        defects = []
+        repro = [
+            f"Check out commit {inputs['commit']}",
+            "Run: " + " ".join(inputs["command"]) + " (inside the sandbox, from the repository root)",
+        ]
+        for v in inputs["failed"]:
+            sev = {"must": "major", "should": "minor", "could": "minor"}.get(
+                v.get("priority", "should"), "minor"
+            )
+            defects.append(
+                {
+                    "dedup_key": f"criterion:{v['key']}:attempt:{inputs['attempt']}",
+                    "title": f"{v['key']} not met: {v['text'][:150]}",
+                    "severity": sev,
+                    "criterion_key": v["key"],
+                    "requirement_key": v.get("requirement_key"),
+                    "reproduction_steps": [*repro, *(f"Failing test: {g}" for g in v["gaps"][:5])],
+                    "expected": v["text"],
+                    "actual": "; ".join(v["gaps"])[:2000] or "acceptance test failed",
+                    "evidence": v["evidence"],
+                }
+            )
+        for case in inputs.get("unmapped_failures", []):
+            defects.append(
+                {
+                    "dedup_key": f"test:{case['nodeid']}:attempt:{inputs['attempt']}",
+                    "title": f"Regression: {case['nodeid'][:200]}",
+                    "severity": "critical",
+                    "criterion_key": None,
+                    "requirement_key": None,
+                    "reproduction_steps": [*repro, f"Failing test: {case['nodeid']}"],
+                    "expected": "existing tests keep passing",
+                    "actual": case.get("message") or case["outcome"],
+                    "evidence": {"test": case["nodeid"], "commit": inputs["commit"]},
+                }
+            )
+        return {"defects": defects}

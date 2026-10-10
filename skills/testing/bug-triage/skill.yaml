@@ -1,0 +1,50 @@
+id: bug-triage
+version: 1.0.0
+name: Bug triage
+description: >-
+  Turn failed acceptance criteria and failing existing tests into reproducible defect reports with
+  severity, steps, expected and actual behavior, and links to evidence.
+category: testing
+triggers:
+  intents: [triage]
+  workflow_stages: [create_defects]
+agents: [qa]
+required_context: [verification_results]
+tools: []
+strategies: [heuristic]
+timeout_s: 30
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: none
+implementation: agentic_sdlc.skills_impl.delivery:BugTriage
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [failed, commit, command, attempt]
+  properties:
+    failed:
+      type: array
+      items: { type: object, required: [key, text, gaps, evidence] }
+    unmapped_failures: { type: array, items: { type: object, required: [nodeid, outcome] } }
+    commit: { type: string }
+    command: { type: array, items: { type: string } }
+    attempt: { type: integer, minimum: 1 }
+output_schema:
+  type: object
+  required: [defects]
+  properties:
+    defects:
+      type: array
+      items:
+        type: object
+        required: [dedup_key, title, severity, reproduction_steps, expected, actual, evidence]
+        properties:
+          dedup_key: { type: string }
+          title: { type: string }
+          severity: { enum: [critical, major, minor] }
+          criterion_key: { type: [string, "null"] }
+          requirement_key: { type: [string, "null"] }
+          reproduction_steps: { type: array, minItems: 1, items: { type: string } }
+          expected: { type: string }
+          actual: { type: string }
+          evidence: { type: object }

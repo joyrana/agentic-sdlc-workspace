@@ -22,11 +22,11 @@ agents:
     tools: [repo.read, repo.workspace, sandbox.exec, fixtures.read]
   ba-verifier:
     name: BA Verification Agent
-    skills: []
+    skills: [acceptance-verification]
     tools: [requirements.read, evidence.read]
   qa:
     name: QA Agent
-    skills: []
+    skills: [regression-testing, bug-triage]
     tools: [sandbox.exec, repo.workspace, evidence.read, requirements.read]
   shipping:
     name: Shipping Agent

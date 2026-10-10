@@ -120,3 +120,29 @@ def sandbox_exec(ctx: SkillContext, repository_id: str, commit: str, suite: str)
     acceptance = acceptance_suite_dir(repo) if suite in ("acceptance", "regression") else None
     ctx.check_deadline()
     return run_suite(Path(repo.location), commit, acceptance_dir=acceptance).as_dict()
+
+
+@tool("evidence.read")
+def evidence_read(ctx: SkillContext, kind: str, record_id: str) -> dict[str, Any]:
+    """Read recorded evidence (test runs, code changes) belonging to the current workflow run only."""
+    from agentic_sdlc.core.errors import ValidationFailed
+    from agentic_sdlc.orm import CodeChange, TestRun
+
+    if kind == "test_run":
+        tr = ctx.db.get(TestRun, uuid.UUID(record_id))
+        if tr is None or tr.run_id != ctx.execution.run_id:
+            raise NotFound("evidence not found for this run")
+        return {
+            "suite": tr.suite,
+            "attempt": tr.attempt,
+            "status": tr.status,
+            "totals": tr.totals,
+            "cases": tr.cases,
+            "commit": tr.commit,
+        }
+    if kind == "code_change":
+        cc = ctx.db.get(CodeChange, uuid.UUID(record_id))
+        if cc is None or cc.run_id != ctx.execution.run_id:
+            raise NotFound("evidence not found for this run")
+        return {"attempt": cc.attempt, "head_commit": cc.head_commit, "files": cc.files, "status": cc.status}
+    raise ValidationFailed("unknown evidence kind")
