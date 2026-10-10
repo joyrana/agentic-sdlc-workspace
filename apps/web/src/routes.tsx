@@ -8,5 +8,6 @@ export const PROJECT_NAV: { path: string; label: string }[] = [
   { path: "architecture", label: "Architecture" },
   { path: "approvals", label: "Approvals" },
   { path: "implementation", label: "Implementation" },
+  { path: "quality", label: "Verification & QA" },
   { path: "settings", label: "Settings" },
 ];
