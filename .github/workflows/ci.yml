@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -eo pipefail {0}
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "22"
+  DATABASE_URL: postgresql+psycopg://sdlc:sdlc@localhost:5432/sdlc_test
+
+jobs:
+  backend:
+    name: Backend (lint, types, tests)
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: sdlc
+          POSTGRES_PASSWORD: sdlc
+          POSTGRES_DB: sdlc_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sdlc" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: services/api/pyproject.toml
+      - name: Install
+        run: |
+          # Created as the runner user: later steps run some tools under sudo.
+          mkdir -p var/logs var/reports
+          {
+            set -x
+            python --version
+            python -m venv .venv
+            .venv/bin/pip install --upgrade pip
+            .venv/bin/pip install -e "services/api[dev]"
+          } 2>&1 | tee var/logs/install.log
+      - name: Ruff
+        working-directory: services/api
+        run: |
+          ../../.venv/bin/ruff check src tests migrations
+          ../../.venv/bin/ruff format --check src tests migrations
+      - name: Mypy
+        working-directory: services/api
+        run: ../../.venv/bin/mypy src
+      - name: Migrations match the ORM
+        working-directory: services/api
+        run: |
+          ../../.venv/bin/alembic upgrade head
+          ../../.venv/bin/alembic check
+      - name: Tests
+        working-directory: services/api
+        run: |
+          sudo --preserve-env=DATABASE_URL,PATH ../../.venv/bin/python -m pytest -rs \
+            --junitxml=../../var/reports/pytest.xml 2>&1 | tee ../../var/logs/pytest.log
+      - name: OpenAPI document is current
+        working-directory: services/api
+        run: |
+          APP_ENV=test ../../.venv/bin/agentic-sdlc openapi > /tmp/openapi.json
+          diff -u openapi.json /tmp/openapi.json
+      - name: Dependency audit
+        run: |
+          .venv/bin/pip install pip-audit
+          .venv/bin/pip-audit --skip-editable
+      - name: Surface failure output as annotations
+        if: failure()
+        run: |
+          # One annotation per log (GitHub shows at most 10 per step); %0A keeps the line breaks.
+          for f in var/logs/*.log; do
+            [ -f "$f" ] || continue
+            body=$(tail -n 60 "$f" | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=$(basename "$f")::${body}"
+          done
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: backend-reports
+          path: |
+            var/reports/
+            var/logs/
+
+  frontend:
+    name: Frontend (lint, types, unit tests, build)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - name: Typed client matches the OpenAPI document
+        run: |
+          npm run gen:api
+          git diff --exit-code -- src/api/schema.d.ts
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --audit-level=high --omit=dev
+
+  images:
+    name: Container images build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build API image
+        run: docker build -f infrastructure/docker/api.Dockerfile -t agentic-sdlc-api:ci .
+      - name: Build web image
+        run: docker build -f infrastructure/docker/web.Dockerfile -t agentic-sdlc-web:ci .
