@@ -17,6 +17,7 @@ from agentic_sdlc.approvals import service as approvals
 from agentic_sdlc.audit import service as audit
 from agentic_sdlc.core.db import utcnow
 from agentic_sdlc.core.errors import PolicyViolation
+from agentic_sdlc.core.gitenv import git_env
 from agentic_sdlc.core.hashing import content_hash, sha256_bytes
 from agentic_sdlc.core.settings import get_settings
 from agentic_sdlc.core.storage import get_storage
@@ -87,7 +88,7 @@ def gather_facts(db: Session, run: WorkflowRun, scope: list[dict[str, Any]]) -> 
             cwd=repo.location,
             capture_output=True,
             check=False,
-            env={"PATH": "/usr/bin:/bin", "HOME": repo.location, "GIT_CONFIG_NOSYSTEM": "1"},
+            env=git_env(),
         ).returncode
         == 0
         if head
@@ -202,7 +203,13 @@ def evaluate(facts: dict[str, Any]) -> dict[str, Any]:
         if facts["deploy_descriptor"]
         else "no deploy.yaml; staging smoke tests cannot run",
     )
-    check("external CI", True, facts["external_ci"])
+    # Shown as a warning, not a pass: an unconfigured external CI is a gap the approver should see.
+    check(
+        "external CI",
+        not str(facts["external_ci"]).startswith("not configured"),
+        facts["external_ci"],
+        warn_only=True,
+    )
     blockers = [c for c in checks if c["status"] == "fail"]
     warnings = [c for c in checks if c["status"] == "warn"]
     return {
@@ -222,7 +229,7 @@ def build_artifact(origin: Path, commit: str) -> tuple[str, str, int]:
         capture_output=True,
         check=True,
         timeout=300,
-        env={"PATH": "/usr/bin:/bin", "HOME": str(origin), "GIT_CONFIG_NOSYSTEM": "1"},
+        env=git_env(),
     ).stdout
     data = gzip.compress(tar, mtime=0)
     key = get_storage().put(data)

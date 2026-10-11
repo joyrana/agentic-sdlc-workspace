@@ -189,3 +189,18 @@ def test_validation_error_envelope(client: TestClient) -> None:
     r = client.post("/api/v1/projects", json={"name": ""}, headers=H("owner"))
     assert r.status_code == 422
     assert r.json()["error"]["code"] == "validation_failed"
+
+
+def test_rate_limit_per_token(client: TestClient, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from agentic_sdlc.api.deps import limiter
+    from agentic_sdlc.core.settings import get_settings
+
+    limiter.reset()
+    monkeypatch.setattr(get_settings(), "rate_limit_per_minute", 3)
+    try:
+        codes = [client.get("/api/v1/projects", headers=H("auditor")).status_code for _ in range(4)]
+        assert codes == [200, 200, 200, 429]
+        # Limits are per token: another user is unaffected.
+        assert client.get("/api/v1/projects", headers=H("qa")).status_code == 200
+    finally:
+        limiter.reset()
