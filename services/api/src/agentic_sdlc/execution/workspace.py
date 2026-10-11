@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_sdlc.core.errors import ValidationFailed
+from agentic_sdlc.core.gitenv import git_env
 from agentic_sdlc.core.logging import _SECRET_PATTERNS
 from agentic_sdlc.core.settings import get_settings
 from agentic_sdlc.execution.repo_reader import safe_relpath
@@ -52,13 +53,7 @@ RISKY = {
 
 
 def git(cwd: Path, *args: str, timeout: int = 120, input_text: str | None = None) -> str:
-    env = {
-        "PATH": "/usr/bin:/bin",
-        "HOME": str(cwd),
-        "GIT_CONFIG_NOSYSTEM": "1",
-        "GIT_TERMINAL_PROMPT": "0",
-        **AGENT_IDENTITY,
-    }
+    env = git_env(**AGENT_IDENTITY)
     proc = subprocess.run(
         ["git", *GIT_SAFE, *args],
         cwd=cwd,

@@ -13,21 +13,16 @@ from pathlib import Path
 from typing import Any
 
 from agentic_sdlc.core.errors import ValidationFailed
+from agentic_sdlc.core.gitenv import git_env
 
 MAX_FILE_BYTES = 200_000
-GIT_ENV = {
-    "PATH": "/usr/bin:/bin",
-    "GIT_CONFIG_NOSYSTEM": "1",
-    "HOME": "/nonexistent",
-    "GIT_TERMINAL_PROMPT": "0",
-}
 
 
 def _git(repo: Path, *args: str, timeout: int = 60) -> str:
     proc = subprocess.run(
         ["git", "-c", "core.hooksPath=/dev/null", "-c", "safe.directory=*", *args],
         cwd=repo,
-        env=GIT_ENV,
+        env=git_env(),
         capture_output=True,
         text=True,
         timeout=timeout,
