@@ -292,3 +292,25 @@ def list_models(_: CurrentPrincipal, db: DB) -> list[dict[str, Any]]:
         {**e.model_dump(), "available": reg.is_available(e), "observed": observed.get(e.model_id, {})}
         for e in reg.entries.values()
     ]
+
+
+@admin_router.get("/evaluations")
+def list_evaluations(_: CurrentPrincipal, db: DB, limit: int = 50) -> list[dict[str, Any]]:
+    """Recorded offline evaluation runs (`python -m agentic_sdlc.evals.run --record`), newest first."""
+    from agentic_sdlc.orm.ai import EvaluationRun
+
+    rows = db.scalars(select(EvaluationRun).order_by(EvaluationRun.created_at.desc()).limit(min(limit, 200)))
+    return [
+        {
+            "id": str(r.id),
+            "suite": r.suite,
+            "dataset_version": r.dataset_version,
+            "config": r.config,
+            "metrics": r.metrics,
+            "passed": r.passed,
+            "notes": r.notes,
+            "created_at": r.created_at.isoformat(),
+            "failing_cases": [c["id"] for c in r.results if not c.get("ok")],
+        }
+        for r in rows
+    ]

@@ -101,8 +101,40 @@ def _base_env(workdir: Path, settings: Settings, extra: dict[str, str] | None) -
     return env
 
 
+def _source_root(settings: Settings) -> Path:
+    """The platform's own source tree. In a checkout that is the repository root; in an installed
+    package (container image) REPO_ROOT points into the interpreter prefix, so use the directory
+    that holds the skills instead."""
+    if (REPO_ROOT / "skills").is_dir() and (REPO_ROOT / "services").is_dir():
+        return REPO_ROOT
+    return settings.skills_dir.resolve().parent
+
+
+def toolchain_problems(settings: Settings) -> list[str]:
+    """The sandbox interpreter must not be modifiable by the sandbox user: a writable toolchain
+    would let one run plant code that a later run (or the platform's test evidence) executes."""
+    python = Path(settings.sandbox_python)
+    problems = []
+    for d in {python.resolve().parent, python.resolve().parent.parent, python.parent, python.parent.parent}:
+        try:
+            st = d.stat()
+        except OSError:
+            continue
+        if st.st_uid == settings.sandbox_uid:
+            problems.append(f"{d} is owned by the sandbox user")
+        if st.st_mode & 0o002 or (st.st_mode & 0o020 and st.st_gid == settings.sandbox_uid):
+            problems.append(f"{d} is writable by the sandbox user (mode {oct(st.st_mode & 0o777)})")
+        try:
+            # Mode bits do not show POSIX ACL grants; any extended ACL is treated as unsafe.
+            if os.getxattr(d, "system.posix_acl_access"):
+                problems.append(f"{d} carries POSIX ACLs (remove them with `setfacl -b`)")
+        except OSError:
+            pass
+    return sorted(problems)
+
+
 def _masked_paths(settings: Settings, workdir: Path) -> list[str]:
-    candidates = [*settings.sandbox_masked_paths, str(settings.data_dir), str(REPO_ROOT)]
+    candidates = [*settings.sandbox_masked_paths, str(settings.data_dir), str(_source_root(settings))]
     out = []
     for c in candidates:
         p = Path(c).resolve()
@@ -174,6 +206,9 @@ class NamespaceSandbox:
         if os.geteuid() != 0:
             raise SandboxError("the namespace sandbox requires root or CAP_SYS_ADMIN for the worker")
         workdir = workdir.resolve()
+        problems = toolchain_problems(s)
+        if problems:
+            raise SandboxError("refusing to run: sandbox toolchain is not protected: " + "; ".join(problems))
         masks = _masked_paths(s, workdir)
         self.prepare_workdir(workdir)
         timeout = timeout_s or s.sandbox_timeout_s

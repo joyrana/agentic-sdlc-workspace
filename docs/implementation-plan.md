@@ -59,14 +59,26 @@ The 15-step journey from the master prompt §26, mapped to concrete mechanisms:
 | Phase | Status | Evidence |
 |---|---|---|
 | 0 Assessment & plan | Verified | This document, architecture docs, threat model, ADRs |
-| 1 Workspace foundation | Verified (Docker images CI-only) | `tests/integration/test_projects_api.py`; live API + Vite proxy check |
-| 2 Documents & BA | Verified (heuristic strategy; LLM path via mock only) | `tests/integration/test_documents_requirements.py`, `tests/unit/test_extraction_rules.py`, `tests/security/test_upload_validation.py`, `tests/contract/test_skill_runtime.py` |
-| 3 Skills, planner, model registry | Verified (heuristic planning; router unit-tested) | `tests/unit/test_graph_and_planning.py`, `tests/unit/test_model_router.py`, `tests/integration/test_backlog.py` |
-| 4 Architect & approvals | Verified (backend; UI pending) | `tests/workflow/test_architecture_and_approvals.py` incl. resume in a separate worker process |
-| 5 Developer agent | Verified (scripted coding agent for the sample; LLM path via mock) | `tests/security/test_sandbox.py` (11 isolation tests), `tests/unit/test_patch_review.py`, `tests/workflow/test_developer_agent.py` |
-| 6 BA verification & QA | Verified | `tests/workflow/test_build_and_verify.py`: defect from real failing test, bounded repair, regression re-run |
-| 7 Release management | Verified (local staging adapter; GitHub Actions adapter unverified here; production disabled) | `tests/e2e/test_vertical_slice.py` (full journey, blocked release, smoke failure → rollback) |
-| 8 Evaluation & optimization | Not started | — |
+| 1 Workspace foundation | Verified | `tests/integration/test_projects_api.py`; CI builds both images and runs the Compose stack |
+| 2 Business Analyst and skills | Verified (rule-based strategy; model path via mock only) | `tests/integration/test_documents_requirements.py`, `tests/unit/test_extraction_rules.py`, `tests/security/test_upload_validation.py`, `tests/contract/test_skill_runtime.py` |
+| 3 Planning and token-aware routing | Verified (rule-based planning; router unit-tested) | `tests/unit/test_graph_and_planning.py`, `tests/unit/test_model_router.py`, `tests/integration/test_backlog.py` |
+| 4 Architecture and human approval | Verified | `tests/workflow/test_architecture_and_approvals.py` incl. resume in a separate worker process; `ApprovalsPage.test.tsx` |
+| 5 Developer agent | Verified (scripted coding agent for the sample; model path via mock) | `tests/workflow/test_developer_agent.py`, `tests/security/test_sandbox.py`, `tests/security/test_git_hardening.py`, `tests/unit/test_patch_review.py` |
+| 6 BA verification and QA | Verified | `tests/workflow/test_build_and_verify.py`: defect from a real failing test, bounded repair, regression re-run |
+| 7 Governed shipping | Verified (local staging adapter; GitHub Actions adapter not exercised; production disabled) | `tests/e2e/test_vertical_slice.py`; browser E2E `apps/web/e2e/vertical-slice.spec.ts`; Compose smoke `scripts/smoke_slice.py` |
+| 8 Agent evaluation and optimization | Verified for rule-based strategies and policies | `evals/`, `tests/evals/test_eval_harness.py`, [validation report](validation-report.md) |
+
+## 3a. Gaps against the phase definitions
+
+Stated plainly so nothing reads as done when it is not:
+
+| Phase | Not implemented yet |
+|---|---|
+| 3 | Routing is cost- and reliability-aware, but no benchmark results exist to inform it. |
+| 5 | **Pull-request creation.** Changes are committed to `agent/<run>` branches in the platform-managed origin; there is no Git-hosting adapter that opens a PR. The model-backed coding agent runs only against the mock provider. The Docker sandbox backend is implemented but has no automated test; the Compose stack runs the namespace sandbox inside the worker container. |
+| 6 | Security checks are the patch policy (paths, binaries, credentials, test weakening) and the release change scan; no SAST or dependency scanning of the target repository. |
+| 7 | The GitHub Actions deployment adapter is implemented but disabled and unverified; production deployment is disabled by policy. A release rejected at the gate ends the run (no "request changes → developer" loop yet). |
+| 8 | No model comparisons (no model endpoint here); the harness measures rule-based strategies and platform policies only. Token-estimate accuracy is not measured (no actuals from real model runs). |
 
 ## 4. Assumptions
 

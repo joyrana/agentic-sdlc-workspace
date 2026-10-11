@@ -58,9 +58,21 @@ const useStyles = makeStyles({
   chips: { display: "flex", flexWrap: "wrap", gap: tokens.spacingHorizontalXS },
 });
 
+type EvalRun = {
+  id: string;
+  suite: string;
+  dataset_version: string;
+  config: Record<string, unknown>;
+  metrics: Record<string, number>;
+  passed: boolean;
+  notes: string;
+  created_at: string;
+  failing_cases: string[];
+};
+
 export function CapabilitiesPage() {
   const s = useStyles();
-  const [tab, setTab] = useState<"skills" | "agents" | "models">("skills");
+  const [tab, setTab] = useState<"skills" | "agents" | "models" | "evaluations">("skills");
   const skills = useQuery({
     queryKey: ["skills"],
     queryFn: () => unwrap(api.GET("/api/v1/skills")) as Promise<unknown> as Promise<Skill[]>,
@@ -73,7 +85,12 @@ export function CapabilitiesPage() {
     queryKey: ["models"],
     queryFn: () => unwrap(api.GET("/api/v1/models")) as Promise<unknown> as Promise<Model[]>,
   });
-  const err = skills.error ?? agents.error ?? models.error;
+  const evals = useQuery({
+    queryKey: ["evaluations"],
+    queryFn: () => unwrap(api.GET("/api/v1/evaluations")) as Promise<unknown> as Promise<EvalRun[]>,
+    enabled: tab === "evaluations",
+  });
+  const err = skills.error ?? agents.error ?? models.error ?? evals.error;
   return (
     <main id="main" className={s.page}>
       <PageHeader
@@ -88,6 +105,7 @@ export function CapabilitiesPage() {
         <Tab value="skills">Skills</Tab>
         <Tab value="agents">Agents</Tab>
         <Tab value="models">Models</Tab>
+        <Tab value="evaluations">Evaluations</Tab>
       </TabList>
       {err && <ErrorNotice error={err} />}
       {tab === "skills" &&
@@ -208,6 +226,52 @@ export function CapabilitiesPage() {
           </TableBody>
         </Table>
       )}
+      {tab === "evaluations" &&
+        evals.data &&
+        (evals.data.length === 0 ? (
+          <Text className={s.muted}>
+            No evaluation runs recorded. Run <code>make evals</code> with <code>--record</code> to add one.
+          </Text>
+        ) : (
+          <Table aria-label="Evaluation runs" size="small">
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell>Suite</TableHeaderCell>
+                <TableHeaderCell>Result</TableHeaderCell>
+                <TableHeaderCell>Metrics</TableHeaderCell>
+                <TableHeaderCell>Recorded</TableHeaderCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {evals.data.map((e) => (
+                <TableRow key={e.id}>
+                  <TableCell>
+                    <Text weight="semibold">{e.suite}</Text>
+                    <div className={`${s.mono} ${s.muted}`}>
+                      dataset {e.dataset_version} · {String(e.config.strategy)}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge color={e.passed ? "success" : "danger"} appearance="tint">
+                      {e.passed ? "within baseline" : "below baseline"}
+                    </Badge>
+                    {e.failing_cases.length > 0 && (
+                      <div className={s.muted}>failing: {e.failing_cases.join(", ")}</div>
+                    )}
+                  </TableCell>
+                  <TableCell className={s.mono}>
+                    {Object.entries(e.metrics).map(([k, v]) => (
+                      <div key={k}>
+                        {k} {v}
+                      </div>
+                    ))}
+                  </TableCell>
+                  <TableCell>{e.created_at.replace("T", " ").slice(0, 16)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ))}
     </main>
   );
 }
