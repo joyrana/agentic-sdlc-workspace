@@ -1,0 +1,59 @@
+id: effort-estimation
+version: 1.0.0
+name: Effort estimation
+description: >-
+  Estimate each story on separate dimensions: story points (relative complexity), uncertainty,
+  model tokens, cost and wall-clock time. Token figures are always marked as estimates and are
+  calibrated against observed actuals once enough history exists. Deterministic by design.
+category: planning
+triggers:
+  intents: [estimate]
+  workflow_stages: [plan_backlog]
+agents: [planner]
+required_context: [backlog_draft]
+tools: []
+strategies: [heuristic]
+timeout_s: 30
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: none
+evaluation:
+  suite: planning
+  success_criteria: { token_estimate_mape_max: 0.5 }
+implementation: agentic_sdlc.skills_impl.planning:EffortEstimation
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [stories, requirements, open_questions, repo_context_tokens]
+  properties:
+    stories: { type: array, items: { type: object, required: [ref, requirement_keys] } }
+    requirements: { type: array, items: { type: object, required: [key, kind, statement] } }
+    open_questions: { type: object, additionalProperties: { type: integer } }
+    repo_context_tokens: { type: integer, minimum: 0 }
+    calibration_factor: { type: number, minimum: 0.1, maximum: 10 }
+    price_in_per_1k: { type: number, minimum: 0 }
+    price_out_per_1k: { type: number, minimum: 0 }
+output_schema:
+  type: object
+  additionalProperties: false
+  required: [estimates]
+  properties:
+    estimates:
+      type: array
+      items:
+        type: object
+        required: [ref, story_points, uncertainty, estimate]
+        properties:
+          ref: { type: string }
+          story_points: { enum: [1, 2, 3, 5, 8, 13] }
+          uncertainty: { enum: [low, medium, high] }
+          estimate:
+            type: object
+            required: [tokens_in, tokens_out, cost_usd, duration_s, is_estimated, method]
+            properties:
+              tokens_in: { type: integer, minimum: 0 }
+              tokens_out: { type: integer, minimum: 0 }
+              cost_usd: { type: number, minimum: 0 }
+              duration_s: { type: integer, minimum: 0 }
+              is_estimated: { const: true }
+              method: { type: string }

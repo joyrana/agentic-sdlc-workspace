@@ -1,0 +1,45 @@
+id: dependency-analysis
+version: 1.0.0
+name: Dependency analysis
+description: >-
+  Validate the story dependency graph (no cycles, no dangling references) and derive execution
+  layers, milestones and the critical path. Deterministic.
+category: planning
+triggers:
+  intents: [analyze_dependencies]
+  workflow_stages: [plan_backlog]
+agents: [planner]
+required_context: [backlog_draft]
+tools: []
+strategies: [heuristic]
+timeout_s: 30
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: none
+implementation: agentic_sdlc.skills_impl.planning:DependencyAnalysis
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [stories, dependencies]
+  properties:
+    stories: { type: array, items: { type: object, required: [ref] } }
+    dependencies:
+      type: array
+      items: { type: object, required: [from_ref, to_ref] }
+output_schema:
+  type: object
+  additionalProperties: false
+  required: [valid, cycle, layers, milestones, critical_path]
+  properties:
+    valid: { type: boolean }
+    cycle: { type: [array, "null"], items: { type: string } }
+    layers: { type: array, items: { type: array, items: { type: string } } }
+    milestones:
+      type: array
+      items:
+        type: object
+        required: [name, refs]
+        properties:
+          name: { type: string }
+          refs: { type: array, items: { type: string } }
+    critical_path: { type: array, items: { type: string } }
