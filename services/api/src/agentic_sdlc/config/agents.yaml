@@ -14,7 +14,7 @@ agents:
     tools: [requirements.read, backlog.read]
   architect:
     name: Architect Agent
-    skills: []
+    skills: [repository-exploration, architecture-design, adr-generation, implementation-planning]
     tools: [repo.read, requirements.read, backlog.read]
   developer:
     name: Developer Agent

@@ -62,7 +62,7 @@ The 15-step journey from the master prompt §26, mapped to concrete mechanisms:
 | 1 Workspace foundation | Verified (Docker images CI-only) | `tests/integration/test_projects_api.py`; live API + Vite proxy check |
 | 2 Documents & BA | Verified (heuristic strategy; LLM path via mock only) | `tests/integration/test_documents_requirements.py`, `tests/unit/test_extraction_rules.py`, `tests/security/test_upload_validation.py`, `tests/contract/test_skill_runtime.py` |
 | 3 Skills, planner, model registry | Verified (heuristic planning; router unit-tested) | `tests/unit/test_graph_and_planning.py`, `tests/unit/test_model_router.py`, `tests/integration/test_backlog.py` |
-| 4 Architect & approvals | Not started | — |
+| 4 Architect & approvals | Verified (backend; UI pending) | `tests/workflow/test_architecture_and_approvals.py` incl. resume in a separate worker process |
 | 5 Developer agent | Not started | — |
 | 6 BA verification & QA | Not started | — |
 | 7 Release management | Not started | — |

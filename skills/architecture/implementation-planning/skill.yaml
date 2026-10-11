@@ -1,0 +1,43 @@
+id: implementation-planning
+version: 1.0.0
+name: Implementation planning
+description: >-
+  Turn the approved architecture and the backlog into an ordered, scoped implementation plan with
+  files, tests and quality gates. Items no coding agent can execute are listed as out of scope.
+category: architecture
+triggers:
+  intents: [plan_implementation]
+  workflow_stages: [plan_implementation]
+agents: [architect]
+required_context: [approved_architecture, backlog]
+tools: []
+strategies: [heuristic]
+timeout_s: 30
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: human_approval
+implementation: agentic_sdlc.skills_impl.architecture:ImplementationPlanning
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [proposal, stories]
+  properties:
+    proposal: { type: object, required: [options, recommended_option, testing_strategy] }
+    stories:
+      type: array
+      items: { type: object, required: [key, title, requirement_keys] }
+    layers: { type: array, items: { type: array, items: { type: string } } }
+output_schema:
+  type: object
+  required: [approach, in_scope, out_of_scope, steps, files, test_plan, quality_gates, rollback]
+  properties:
+    approach: { type: string }
+    in_scope: { type: array, items: { type: string } }
+    out_of_scope: { type: array, items: { type: object, required: [key, reason] } }
+    steps:
+      type: array
+      items: { type: object, required: [order, backlog_key, description, files, tests] }
+    files: { type: array, items: { type: string } }
+    test_plan: { type: array, items: { type: string } }
+    quality_gates: { type: array, items: { type: string } }
+    rollback: { type: string }

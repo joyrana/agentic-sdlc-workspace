@@ -23,8 +23,7 @@ class ArchitectureProposal(IdMixin, TimestampMixin, Base):
     content: Mapped[dict[str, Any]] = mapped_column()
     content_hash: Mapped[str] = mapped_column(String(64))
     generated_by: Mapped[dict[str, Any]] = mapped_column(default=dict)  # agent/skill/strategy/model
-
-    __mapper_args__ = {"version_id_col": version}
+    # `version` is the CONTENT version (incremented only when content changes); approvals bind to it.
 
 
 class ArchitectureDecisionRecord(IdMixin, TimestampMixin, Base):

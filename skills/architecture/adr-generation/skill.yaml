@@ -1,0 +1,36 @@
+id: adr-generation
+version: 1.0.0
+name: ADR generation
+description: >-
+  Record the recommended design as an Architecture Decision Record with context, decision,
+  alternatives considered and consequences.
+category: architecture
+triggers:
+  intents: [record_decision]
+  workflow_stages: [propose_architecture]
+agents: [architect]
+required_context: [architecture_proposal]
+tools: []
+strategies: [heuristic]
+timeout_s: 30
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: human_approval
+implementation: agentic_sdlc.skills_impl.architecture:AdrGeneration
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [proposal]
+  properties:
+    proposal: { type: object, required: [options, recommended_option, context, decision_rationale, traceability] }
+output_schema:
+  type: object
+  required: [title, status, context, decision, alternatives, consequences, traceability]
+  properties:
+    title: { type: string, minLength: 1 }
+    status: { const: proposed }
+    context: { type: string }
+    decision: { type: string }
+    alternatives: { type: array, items: { type: object, required: [name, why_not] } }
+    consequences: { type: object, required: [positive, negative, risks] }
+    traceability: { type: array, items: { type: string } }

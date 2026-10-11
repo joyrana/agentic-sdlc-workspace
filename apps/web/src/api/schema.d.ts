@@ -546,6 +546,178 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/projects/{project_id}/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Runs */
+        get: operations["list_runs_api_v1_projects__project_id__runs_get"];
+        put?: never;
+        /** Start Run */
+        post: operations["start_run_api_v1_projects__project_id__runs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Run */
+        get: operations["get_run_api_v1_projects__project_id__runs__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/runs/{run_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["cancel_api_v1_projects__project_id__runs__run_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Approvals */
+        get: operations["list_approvals_api_v1_projects__project_id__approvals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/approvals/{request_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide */
+        post: operations["decide_api_v1_projects__project_id__approvals__request_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/architecture": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Proposals */
+        get: operations["list_proposals_api_v1_projects__project_id__architecture_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/architecture/{proposal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Proposal */
+        get: operations["get_proposal_api_v1_projects__project_id__architecture__proposal_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Proposal */
+        patch: operations["edit_proposal_api_v1_projects__project_id__architecture__proposal_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/implementation-plans/{plan_id}/scope": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Narrow Scope */
+        patch: operations["narrow_scope_api_v1_projects__project_id__implementation_plans__plan_id__scope_patch"];
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/adrs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Adrs */
+        get: operations["list_adrs_api_v1_projects__project_id__adrs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/approvals/{request_id}/decision-record": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Decision Record */
+        get: operations["decision_record_api_v1_projects__project_id__approvals__request_id__decision_record_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/skills": {
         parameters: {
             query?: never;
@@ -601,6 +773,89 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AgentRunOut */
+        AgentRunOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Stage */
+            stage: string | null;
+            /** Agent */
+            agent: string;
+            /** Skill Id */
+            skill_id: string;
+            /** Skill Version */
+            skill_version: string;
+            /** Strategy */
+            strategy: string;
+            /** Model Ref */
+            model_ref: string | null;
+            /** Is Mock */
+            is_mock: boolean;
+            /** Status */
+            status: string;
+            /** Attempts */
+            attempts: number;
+            /** Duration Ms */
+            duration_ms: number | null;
+            /** Routing */
+            routing: {
+                [key: string]: unknown;
+            };
+            /** Error */
+            error: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** ApprovalOut */
+        ApprovalOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Run Id */
+            run_id: string | null;
+            /** Gate */
+            gate: string;
+            /** Requested Action */
+            requested_action: string;
+            /** Artifact Type */
+            artifact_type: string;
+            /**
+             * Artifact Id
+             * Format: uuid
+             */
+            artifact_id: string;
+            /** Artifact Version */
+            artifact_version: number;
+            /** Content Hash */
+            content_hash: string;
+            /** Required Roles */
+            required_roles: string[];
+            /** Status */
+            status: string;
+            /** Expires At */
+            expires_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Can Decide */
+            can_decide: boolean;
+            /** Cannot Decide Reason */
+            cannot_decide_reason: string | null;
+            /** Decision */
+            decision: {
+                [key: string]: unknown;
+            } | null;
+        };
         /** AuditOut */
         AuditOut: {
             /** Id */
@@ -807,6 +1062,19 @@ export interface components {
             text?: string | null;
             /** Status */
             status?: ("draft" | "approved" | "rejected") | null;
+        };
+        /** DecisionIn */
+        DecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approved" | "rejected" | "changes_requested";
+            /**
+             * Comment
+             * @default
+             */
+            comment: string;
         };
         /** DependencyCreate */
         DependencyCreate: {
@@ -1068,6 +1336,15 @@ export interface components {
             /** Offset */
             offset: number;
         };
+        /** PlanScopeEdit */
+        PlanScopeEdit: {
+            /** Expected Version */
+            expected_version: number;
+            /** Remove */
+            remove: string[];
+            /** Reason */
+            reason: string;
+        };
         /** ProjectCreate */
         ProjectCreate: {
             /** Name */
@@ -1176,6 +1453,46 @@ export interface components {
             limits?: {
                 [key: string]: unknown;
             } | null;
+        };
+        /** ProposalEdit */
+        ProposalEdit: {
+            /** Expected Version */
+            expected_version: number;
+            /** Content */
+            content: {
+                [key: string]: unknown;
+            };
+        };
+        /** ProposalOut */
+        ProposalOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Run Id */
+            run_id: string | null;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Version */
+            version: number;
+            /** Content */
+            content: {
+                [key: string]: unknown;
+            };
+            /** Content Hash */
+            content_hash: string;
+            /** Generated By */
+            generated_by: {
+                [key: string]: unknown;
+            };
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** QuestionOut */
         QuestionOut: {
@@ -1406,6 +1723,129 @@ export interface components {
             author_id: string | null;
             /** Reason */
             reason: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** RunCancel */
+        RunCancel: {
+            /** Reason */
+            reason: string;
+        };
+        /** RunCreate */
+        RunCreate: {
+            /**
+             * Repository Id
+             * Format: uuid
+             */
+            repository_id: string;
+        };
+        /** RunDetail */
+        RunDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Definition */
+            definition: string;
+            /** Definition Version */
+            definition_version: number;
+            /** Status */
+            status: string;
+            /** Current Stage */
+            current_stage: string | null;
+            /** Config */
+            config: {
+                [key: string]: unknown;
+            };
+            /** Input Artifacts */
+            input_artifacts: {
+                [key: string]: unknown;
+            };
+            /** Counters */
+            counters: {
+                [key: string]: unknown;
+            };
+            /** Outcome */
+            outcome: {
+                [key: string]: unknown;
+            };
+            /** Error */
+            error: string | null;
+            /**
+             * Created By
+             * Format: uuid
+             */
+            created_by: string;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Agent Runs */
+            agent_runs: components["schemas"]["AgentRunOut"][];
+            /** Tool Invocations */
+            tool_invocations: {
+                [key: string]: unknown;
+            }[];
+            /** Timeline */
+            timeline: {
+                [key: string]: unknown;
+            }[];
+            /** Approvals */
+            approvals: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** RunOut */
+        RunOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Definition */
+            definition: string;
+            /** Definition Version */
+            definition_version: number;
+            /** Status */
+            status: string;
+            /** Current Stage */
+            current_stage: string | null;
+            /** Config */
+            config: {
+                [key: string]: unknown;
+            };
+            /** Input Artifacts */
+            input_artifacts: {
+                [key: string]: unknown;
+            };
+            /** Counters */
+            counters: {
+                [key: string]: unknown;
+            };
+            /** Outcome */
+            outcome: {
+                [key: string]: unknown;
+            };
+            /** Error */
+            error: string | null;
+            /**
+             * Created By
+             * Format: uuid
+             */
+            created_by: string;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
             /**
              * Created At
              * Format: date-time
@@ -2690,6 +3130,439 @@ export interface operations {
                 authorization?: string | null;
             };
             path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_runs_api_v1_projects__project_id__runs_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_run_api_v1_projects__project_id__runs_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_run_api_v1_projects__project_id__runs__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                run_id: string;
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_api_v1_projects__project_id__runs__run_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                run_id: string;
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunCancel"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_approvals_api_v1_projects__project_id__approvals_get: {
+        parameters: {
+            query?: {
+                status?: "pending" | "all";
+            };
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_api_v1_projects__project_id__approvals__request_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                request_id: string;
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_proposals_api_v1_projects__project_id__architecture_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_proposal_api_v1_projects__project_id__architecture__proposal_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                proposal_id: string;
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    edit_proposal_api_v1_projects__project_id__architecture__proposal_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                proposal_id: string;
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalEdit"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    narrow_scope_api_v1_projects__project_id__implementation_plans__plan_id__scope_patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                plan_id: string;
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanScopeEdit"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_adrs_api_v1_projects__project_id__adrs_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decision_record_api_v1_projects__project_id__approvals__request_id__decision_record_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                request_id: string;
                 project_id: string;
             };
             cookie?: never;

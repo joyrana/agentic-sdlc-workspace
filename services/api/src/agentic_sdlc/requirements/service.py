@@ -531,6 +531,10 @@ def resolve_question(
         target_id=q.id,
         details={"kind": q.kind, "blocking": q.blocking},
     )
+    if q.blocking:
+        from agentic_sdlc.workflows.delivery import wake_runs_waiting_for_clarification
+
+        wake_runs_waiting_for_clarification(db, q.project_id, cause=f"question:{q.id}")
     events.emit(
         db,
         type="question.resolved",
