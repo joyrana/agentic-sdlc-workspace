@@ -158,3 +158,18 @@ def test_output_is_truncated_and_redacted(ws: Path) -> None:
     r = py(NamespaceSandbox(), ws, "print('y'*200000); print('token=ghp_' + 'a'*30)")
     assert "ghp_aaaa" not in r.stdout and "[REDACTED]" in r.stdout
     assert len(r.stdout) < 70_000 and "truncated" in r.stdout
+
+
+def test_refuses_to_run_with_a_writable_toolchain(ws: Path, tmp_path: Path) -> None:
+    from agentic_sdlc.execution.sandbox import toolchain_problems
+
+    s = get_settings().model_copy()
+    fake = tmp_path / "tc" / "bin"
+    fake.mkdir(parents=True)
+    (fake / "python").symlink_to(get_settings().sandbox_python)
+    os.chmod(fake.parent, 0o777)  # noqa: S103 - the unsafe toolchain under test
+    s.sandbox_python = str(fake / "python")
+    assert any("writable by the sandbox user" in p for p in toolchain_problems(s))
+    with pytest.raises(SandboxError, match="toolchain is not protected"):
+        NamespaceSandbox(s).run(["true"], ws)
+    assert toolchain_problems(get_settings()) == []
