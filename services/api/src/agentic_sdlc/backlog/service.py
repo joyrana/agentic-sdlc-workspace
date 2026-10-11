@@ -89,7 +89,7 @@ def estimate_repo_context(repo: ProjectRepository | None) -> int:
     return min(total, 200_000) // 4
 
 
-def _next_key(db: Session, project: Project) -> Any:
+def next_key(db: Session, project: Project) -> Any:
     n = (
         db.scalar(select(func.count()).select_from(BacklogItem).where(BacklogItem.project_id == project.id))
         or 0
@@ -199,7 +199,7 @@ def generate_backlog(
         "dependency-analysis", {"stories": stories_for_deps, "dependencies": plan["dependencies"]}, ctx
     ).output
 
-    keys = _next_key(db, project)
+    keys = next_key(db, project)
     req_ids = {r["key"]: uuid.UUID(r["id"]) for r in todo}
     crit_ids = {c["key"]: uuid.UUID(c["id"]) for r in todo for c in r["criteria"]}
     generated = {
@@ -342,7 +342,7 @@ def create_item(db: Session, principal: Principal, project: Project, data: dict[
     _check_parent(db, project.id, data["kind"], data.get("parent_id"))
     item = BacklogItem(
         project_id=project.id,
-        key=next(_next_key(db, project)),
+        key=next(next_key(db, project)),
         kind=data["kind"],
         title=data["title"],
         description=data.get("description", ""),

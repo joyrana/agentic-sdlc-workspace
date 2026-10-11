@@ -1,0 +1,45 @@
+id: acceptance-verification
+version: 1.0.0
+name: Acceptance verification
+description: >-
+  Verify each acceptance criterion independently from recorded QA evidence for the exact commit under
+  review. Criteria without an automated acceptance test are reported as unverifiable, never as passed.
+category: verification
+triggers:
+  intents: [verify]
+  workflow_stages: [ba_verification]
+agents: [ba-verifier]
+required_context: [criteria, qa_test_run, code_change]
+tools: [evidence.read]
+strategies: [heuristic]
+timeout_s: 60
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: none
+implementation: agentic_sdlc.skills_impl.delivery:AcceptanceVerification
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [criteria, test_run_id, code_change_id]
+  properties:
+    criteria:
+      type: array
+      items: { type: object, required: [key, text, priority] }
+    test_run_id: { type: string, format: uuid }
+    code_change_id: { type: string, format: uuid }
+output_schema:
+  type: object
+  required: [results, summary]
+  properties:
+    results:
+      type: array
+      items:
+        type: object
+        required: [key, status, confidence, gaps, evidence]
+        properties:
+          key: { type: string }
+          status: { enum: [verified, failed, unverifiable] }
+          confidence: { type: number, minimum: 0, maximum: 1 }
+          gaps: { type: array, items: { type: string } }
+          evidence: { type: object }
+    summary: { type: object, required: [verified, failed, unverifiable] }

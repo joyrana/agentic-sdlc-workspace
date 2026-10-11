@@ -746,6 +746,10 @@ def build_graph() -> StateGraph[DeliveryState]:
         plan_implementation,
         implementation_gate,
         build.implement,
+        build.qa_tests,
+        build.ba_verification,
+        build.create_defects,
+        build.regression,
         finalize,
     )
     for fn in nodes:
@@ -774,7 +778,13 @@ def build_graph() -> StateGraph[DeliveryState]:
         "implementation_gate",
         _route({"approved": "implement", "wait": "implementation_gate", "rejected": END}),
     )
-    g.add_conditional_edges("implement", _route({"ok": "finalize"}))
+    g.add_conditional_edges("implement", _route({"ok": "qa_tests"}))
+    g.add_conditional_edges("qa_tests", _route({"ok": "ba_verification"}))
+    g.add_conditional_edges(
+        "ba_verification", _route({"verified": "regression", "defects": "create_defects"})
+    )
+    g.add_conditional_edges("create_defects", _route({"repair": "implement"}))
+    g.add_conditional_edges("regression", _route({"ok": "finalize"}))
     g.add_edge("finalize", END)
     return g
 

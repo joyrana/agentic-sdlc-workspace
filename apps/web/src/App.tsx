@@ -20,6 +20,7 @@ const CapabilitiesPage = lazy(() =>
 const ImplementationPage = lazy(() =>
   import("./pages/ImplementationPage").then((m) => ({ default: m.ImplementationPage })),
 );
+const QualityPage = lazy(() => import("./pages/QualityPage").then((m) => ({ default: m.QualityPage })));
 const RequirementsPage = lazy(() =>
   import("./pages/RequirementsPage").then((m) => ({ default: m.RequirementsPage })),
 );
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
           { path: "architecture", element: page(<ArchitecturePage />) },
           { path: "approvals", element: page(<ApprovalsPage />) },
           { path: "implementation", element: page(<ImplementationPage />) },
+          { path: "quality", element: page(<QualityPage />) },
           { path: "settings", element: page(<ProjectSettings />) },
         ],
       },
