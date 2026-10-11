@@ -67,6 +67,13 @@ const useStyles = makeStyles({
   row: { display: "flex", gap: tokens.spacingHorizontalS, alignItems: "center", flexWrap: "wrap" },
   mono: { fontFamily: tokens.fontFamilyMonospace, fontSize: tokens.fontSizeBase200 },
   muted: { color: tokens.colorNeutralForeground3 },
+  evidence: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalXXS,
+    marginTop: tokens.spacingVerticalXS,
+  },
+  line: { display: "flex", gap: tokens.spacingHorizontalXS, alignItems: "center" },
   pass: { color: tokens.colorPaletteGreenForeground1 },
   warn: { color: tokens.colorPaletteMarigoldForeground1 },
   fail: { color: tokens.colorPaletteRedForeground1 },
@@ -174,21 +181,23 @@ function ReleaseCard({ r, projectId }: { r: ReleaseT; projectId: string }) {
             <StatusBadge status={d.status} />
             {d.started_at && <span className={s.muted}>{d.started_at.replace("T", " ").slice(0, 19)}</span>}
           </div>
-          {d.smoke.integrity && (
-            <Text>
-              {icon(d.smoke.integrity.ok ? "pass" : "fail")} {d.smoke.integrity.detail}
-            </Text>
-          )}
-          {[
-            ...(d.smoke.checks ?? []).map((c) => ({ ...c, kind: "smoke" })),
-            ...(d.health.checks ?? []).map((c) => ({ ...c, kind: "health" })),
-          ].map((c) => (
-            <Text key={`${c.kind}-${c.name}`}>
-              {icon(c.ok ? "pass" : "fail")} {c.kind}: {c.name}{" "}
-              <span className={s.mono}>{(c.output ?? "").trim().slice(-80)}</span>
-            </Text>
-          ))}
-          {d.rollback.performed && <Text>Rolled back: {d.rollback.reason}</Text>}
+          <div className={s.evidence}>
+            {d.smoke.integrity && (
+              <Text className={s.line}>
+                {icon(d.smoke.integrity.ok ? "pass" : "fail")} {d.smoke.integrity.detail}
+              </Text>
+            )}
+            {[
+              ...(d.smoke.checks ?? []).map((c) => ({ ...c, kind: "smoke" })),
+              ...(d.health.checks ?? []).map((c) => ({ ...c, kind: "health" })),
+            ].map((c) => (
+              <Text key={`${c.kind}-${c.name}`} className={s.line}>
+                {icon(c.ok ? "pass" : "fail")} {c.kind}: {c.name}
+                <span className={s.mono}>{(c.output ?? "").trim().slice(-80)}</span>
+              </Text>
+            ))}
+            {d.rollback.performed && <Text>Rolled back: {d.rollback.reason}</Text>}
+          </div>
         </section>
       ))}
       {isApprover && active && (

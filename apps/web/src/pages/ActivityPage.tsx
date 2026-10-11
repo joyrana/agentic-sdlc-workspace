@@ -224,9 +224,8 @@ export function ActivityPage() {
                     <TableCell>{a.stage?.replace(/_/g, " ")}</TableCell>
                     <TableCell>{a.agent}</TableCell>
                     <TableCell>
-                      <span className={s.mono}>
-                        {a.skill_id}@{a.skill_version}
-                      </span>
+                      <Text>{a.skill_id}</Text>
+                      <div className={s.mono}>v{a.skill_version}</div>
                     </TableCell>
                     <TableCell>
                       <StrategyBadge strategy={a.is_mock ? "mock" : a.strategy} model={a.model_ref} />
