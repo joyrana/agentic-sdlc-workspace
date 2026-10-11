@@ -54,6 +54,8 @@ jobs:
             .venv/bin/pip install --upgrade pip
             .venv/bin/pip install -e "services/api[dev]"
           } 2>&1 | tee var/logs/install.log
+      - name: Sandbox toolchain (namespace sandbox needs root)
+        run: sudo make sandbox-toolchain
       - name: Ruff
         working-directory: services/api
         run: |
@@ -67,11 +69,16 @@ jobs:
         run: |
           ../../.venv/bin/alembic upgrade head
           ../../.venv/bin/alembic check
-      - name: Tests
+      - name: Tests (as root so sandboxed execution is exercised, not skipped)
         working-directory: services/api
         run: |
           sudo --preserve-env=DATABASE_URL,PATH ../../.venv/bin/python -m pytest -rs \
             --junitxml=../../var/reports/pytest.xml 2>&1 | tee ../../var/logs/pytest.log
+      - name: Fail if sandbox tests were skipped
+        run: |
+          if grep -q 'needs root and unshare\|needs the namespace sandbox\|sandbox toolchain missing' var/reports/pytest.xml; then
+            echo "Sandbox-dependent tests were skipped in CI"; exit 1
+          fi
       - name: OpenAPI document is current
         working-directory: services/api
         run: |

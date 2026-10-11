@@ -18,7 +18,7 @@ agents:
     tools: [repo.read, requirements.read, backlog.read]
   developer:
     name: Developer Agent
-    skills: []
+    skills: [code-generation]
     tools: [repo.read, repo.workspace, sandbox.exec, fixtures.read]
   ba-verifier:
     name: BA Verification Agent
