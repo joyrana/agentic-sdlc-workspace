@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-sdlc"
+version = "0.1.0"
+description = "Agentic SDLC Workspace — API, worker and agent runtime"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+dependencies = [
+  "fastapi>=0.140,<1",
+  "uvicorn[standard]>=0.50,<1",
+  "sqlalchemy>=2.0.40,<2.2",
+  "alembic>=1.16,<2",
+  "psycopg[binary]>=3.2,<4",
+  "pydantic>=2.11,<3",
+  "pydantic-settings>=2.10,<3",
+  "python-docx>=1.2,<2",
+  "langgraph>=1.2,<2",
+  "langgraph-checkpoint-postgres>=3.1,<4",
+  "pyyaml>=6.0.2,<7",
+  "jsonschema>=4.25,<5",
+  "httpx>=0.28,<1",
+  "python-multipart>=0.0.20",
+  "opentelemetry-api>=1.40,<2",
+  "opentelemetry-sdk>=1.40,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4",
+  "pytest-cov>=6",
+  "ruff>=0.15",
+  "mypy>=1.18",
+  "types-PyYAML",
+]
+
+[project.scripts]
+agentic-sdlc = "agentic_sdlc.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+agentic_sdlc = ["py.typed", "config/*.yaml"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "SIM", "RUF"]
+ignore = ["S101", "S603", "S607", "B008", "RUF012", "UP046"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106", "S108", "S311"]
+"migrations/**" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+strict_optional = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+ignore_missing_imports = true
+exclude = ["migrations/"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "model: requires a configured real model endpoint",
+  "sandbox: requires namespace sandbox privileges (root/CAP_SYS_ADMIN)",
+]
+addopts = "-q"
