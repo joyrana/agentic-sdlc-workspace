@@ -94,6 +94,12 @@ def run_worker(*, once: bool = False, poll_s: float = 1.0) -> None:
     with scope() as db:
         get_skill_registry().sync_to_db(db)
         get_registry().sync_to_db(db)
+    # Create or migrate LangGraph's checkpoint tables before taking jobs, so the one-time setup
+    # never runs in the middle of a user's workflow.
+    from agentic_sdlc.workflows.checkpoint import checkpointer
+
+    with checkpointer():
+        pass
     if once:
         drain()
         return
