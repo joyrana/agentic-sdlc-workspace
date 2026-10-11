@@ -59,8 +59,8 @@ The 15-step journey from the master prompt §26, mapped to concrete mechanisms:
 | Phase | Status | Evidence |
 |---|---|---|
 | 0 Assessment & plan | Verified | This document, architecture docs, threat model, ADRs |
-| 1 Workspace foundation | Not started | — |
-| 2 Documents & BA | Not started | — |
+| 1 Workspace foundation | Verified (Docker images CI-only) | `tests/integration/test_projects_api.py`; live API + Vite proxy check |
+| 2 Documents & BA | Verified (heuristic strategy; LLM path via mock only) | `tests/integration/test_documents_requirements.py`, `tests/unit/test_extraction_rules.py`, `tests/security/test_upload_validation.py`, `tests/contract/test_skill_runtime.py` |
 | 3 Skills, planner, model registry | Not started | — |
 | 4 Architect & approvals | Not started | — |
 | 5 Developer agent | Not started | — |

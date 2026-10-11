@@ -1,0 +1,9 @@
+# Kickoff meeting: task title validation (SAMPLE DATA)
+
+[00:00:12] Priya: Thanks for joining. The goal is to stop broken titles reaching the task list.
+[00:00:31] Marcus: Support says some titles are pasted whole paragraphs. We need a limit.
+[00:00:45] Priya: The export template cuts off titles, so titles must be no longer than 100 characters.
+[00:01:10] Marcus: Do we also need to block titles that are just spaces?
+[00:01:22] Priya: Yes, it has to reject those.
+[00:01:40] Dana: The error should be user-friendly.
+[00:02:05] Marcus: Who owns the export template change?

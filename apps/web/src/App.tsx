@@ -6,6 +6,8 @@ import { ProjectLayout } from "./pages/ProjectLayout";
 import { ProjectOverview } from "./pages/ProjectOverview";
 import { ProjectSettings } from "./pages/ProjectSettings";
 import { ProjectsPage } from "./pages/ProjectsPage";
+import { RequirementsPage } from "./pages/RequirementsPage";
+import { SourcesPage } from "./pages/SourcesPage";
 import { SignIn } from "./pages/SignIn";
 
 const router = createBrowserRouter([
@@ -19,6 +21,8 @@ const router = createBrowserRouter([
         element: <ProjectLayout />,
         children: [
           { index: true, element: <ProjectOverview /> },
+          { path: "sources", element: <SourcesPage /> },
+          { path: "requirements", element: <RequirementsPage /> },
           { path: "settings", element: <ProjectSettings /> },
         ],
       },

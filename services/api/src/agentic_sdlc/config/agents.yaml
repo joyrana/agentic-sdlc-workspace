@@ -1,0 +1,34 @@
+# Agent definitions: which skills each agent may run and which tools it may call.
+# A tool call succeeds only if the tool is in BOTH the agent's and the skill's allow-lists.
+# Agents are service principals; they hold no project roles and cannot approve anything.
+# Only implemented skills are listed.
+
+agents:
+  business-analyst:
+    name: Business Analyst Agent
+    skills: [brd-analysis, transcript-analysis]
+    tools: [documents.read]
+  planner:
+    name: Planner Agent
+    skills: []
+    tools: [requirements.read, backlog.read]
+  architect:
+    name: Architect Agent
+    skills: []
+    tools: [repo.read, requirements.read, backlog.read]
+  developer:
+    name: Developer Agent
+    skills: []
+    tools: [repo.read, repo.workspace, sandbox.exec, fixtures.read]
+  ba-verifier:
+    name: BA Verification Agent
+    skills: []
+    tools: [requirements.read, evidence.read]
+  qa:
+    name: QA Agent
+    skills: []
+    tools: [sandbox.exec, repo.workspace, evidence.read, requirements.read]
+  shipping:
+    name: Shipping Agent
+    skills: []
+    tools: [evidence.read, release.read, sandbox.exec]

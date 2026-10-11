@@ -1,0 +1,66 @@
+# Model registry. Each entry describes a model the router may select.
+#
+# Licensing: values below are as reported by the publisher's model card and have NOT been verified
+# in this repository's build environment (license_verified: false). Verify the model card and license
+# text before deploying, and record the verification here.
+#
+# Pricing: self-hosted models have no per-token API price (0.0). Compute cost is not modeled yet.
+# Context: Qwen2.5 default configs ship 32,768 tokens; longer contexts require YaRN rope scaling,
+# which the serving runtime must be configured for. The router uses `context_window` as configured.
+
+models:
+  - model_id: qwen2.5-7b-instruct
+    provider: openai_compatible
+    served_model_name: Qwen/Qwen2.5-7B-Instruct
+    revision: main  # pin a commit hash when deploying
+    family: qwen2.5
+    license: Apache-2.0
+    license_verified: false
+    deployment: { runtime: vllm, min_gpu_memory_gb: 24, notes: "bf16; ~16GB weights" }
+    tokenizer: Qwen/Qwen2.5-7B-Instruct
+    context_window: 32768
+    max_output_tokens: 8192
+    tasks: [extraction, planning, architecture, review, verification]
+    capabilities: [structured_output, instruction_following]
+    privacy: self_hosted
+    pricing: { input_per_1k_usd: 0.0, output_per_1k_usd: 0.0 }
+    benchmarks: {}  # filled only from evaluations run by this platform (see evals/)
+    priority: 50
+
+  - model_id: qwen2.5-coder-7b-instruct
+    provider: openai_compatible
+    served_model_name: Qwen/Qwen2.5-Coder-7B-Instruct
+    revision: main
+    family: qwen2.5-coder
+    license: Apache-2.0
+    license_verified: false
+    deployment: { runtime: vllm, min_gpu_memory_gb: 24, notes: "bf16; ~16GB weights" }
+    tokenizer: Qwen/Qwen2.5-Coder-7B-Instruct
+    context_window: 32768
+    max_output_tokens: 8192
+    tasks: [code_generation, code_review, test_generation, repair]
+    capabilities: [structured_output, instruction_following, code]
+    privacy: self_hosted
+    pricing: { input_per_1k_usd: 0.0, output_per_1k_usd: 0.0 }
+    benchmarks: {}
+    priority: 60
+
+  - model_id: mock-deterministic
+    provider: mock
+    served_model_name: mock
+    revision: "1"
+    family: mock
+    license: n/a
+    license_verified: true
+    deployment: { runtime: in-process }
+    tokenizer: chars/4
+    context_window: 131072
+    max_output_tokens: 16384
+    tasks: [extraction, planning, architecture, review, verification, code_generation, code_review,
+            test_generation, repair]
+    capabilities: [structured_output, instruction_following, code]
+    privacy: in_process
+    pricing: { input_per_1k_usd: 0.0, output_per_1k_usd: 0.0 }
+    benchmarks: {}
+    priority: 0
+    is_mock: true

@@ -1,0 +1,93 @@
+id: brd-analysis
+version: 1.0.0
+name: BRD analysis
+description: >-
+  Extract requirements, business rules, acceptance criteria and open questions from a business
+  requirements document, each linked to the exact passage it came from.
+category: requirements
+triggers:
+  intents: [extract_requirements]
+  document_kinds: [brd, spec]
+agents: [business-analyst]
+required_context: [document_version]
+preconditions: [document_normalized]
+postconditions: [quotes_match_blocks, unique_keys]
+tools: [documents.read]
+strategies: [llm, heuristic]
+model:
+  task: extraction
+  capabilities: [structured_output]
+  expected_output_tokens: 6000
+budgets: { max_input_tokens: 24000, max_output_tokens: 8000, max_model_calls: 3 }
+timeout_s: 180
+retry: { max_attempts: 3, backoff_s: 0.5 }
+approval_level: human_review
+failure: { on_validation_error: retry_then_fail, on_timeout: fail }
+evaluation:
+  suite: requirements
+  success_criteria: { key_recall: 0.9, statement_recall: 0.9, locator_validity: 1.0 }
+implementation: agentic_sdlc.skills_impl.requirements:BrdAnalysis
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [document_version_id]
+  properties:
+    document_version_id: { type: string, format: uuid }
+    document_kind: { enum: [brd, spec, transcript] }
+output_schema: &extraction
+  type: object
+  additionalProperties: false
+  required: [requirements, business_rules, questions]
+  properties:
+    requirements:
+      type: array
+      items:
+        type: object
+        required: [key, kind, title, statement, priority, origin, block_id, quote, confidence, acceptance_criteria]
+        properties:
+          key: { type: string, pattern: "^[A-Z]{2,4}-\\d{3,4}$" }
+          kind: { enum: [functional, non_functional, constraint] }
+          title: { type: string, minLength: 1, maxLength: 300 }
+          statement: { type: string, minLength: 1 }
+          priority: { enum: [must, should, could] }
+          origin: { enum: [explicit, inferred] }
+          block_id: { type: string }
+          quote: { type: string, minLength: 1 }
+          confidence: { type: number, minimum: 0, maximum: 1 }
+          speaker: { type: string }
+          acceptance_criteria:
+            type: array
+            minItems: 1
+            items:
+              type: object
+              required: [text, origin]
+              properties:
+                text: { type: string, minLength: 1 }
+                origin: { enum: [explicit, inferred] }
+                block_id: { type: [string, "null"] }
+                quote: { type: [string, "null"] }
+    business_rules:
+      type: array
+      items:
+        type: object
+        required: [key, statement, block_id, quote, origin]
+        properties:
+          key: { type: string, pattern: "^[A-Z]{2,4}-\\d{3,4}$" }
+          statement: { type: string, minLength: 1 }
+          block_id: { type: string }
+          quote: { type: string }
+          origin: { enum: [explicit, inferred] }
+          requirement_key: { type: [string, "null"] }
+    questions:
+      type: array
+      items:
+        type: object
+        required: [kind, question, blocking]
+        properties:
+          kind: { enum: [ambiguity, missing_detail, contradiction, assumption, injection_warning] }
+          question: { type: string, minLength: 1 }
+          block_id: { type: [string, "null"] }
+          quote: { type: [string, "null"] }
+          blocking: { type: boolean }
+          requirement_key: { type: [string, "null"] }
