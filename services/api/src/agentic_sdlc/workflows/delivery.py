@@ -734,6 +734,7 @@ def _route(mapping: dict[str, str]) -> Callable[[DeliveryState], str]:
 
 def build_graph() -> StateGraph[DeliveryState]:
     from agentic_sdlc.workflows import stages_build as build
+    from agentic_sdlc.workflows import stages_release as rel
 
     g = StateGraph(DeliveryState)
     nodes = (
@@ -750,6 +751,10 @@ def build_graph() -> StateGraph[DeliveryState]:
         build.ba_verification,
         build.create_defects,
         build.regression,
+        rel.release_readiness,
+        rel.release_gate,
+        rel.deploy_staging,
+        rel.post_deploy_verification,
         finalize,
     )
     for fn in nodes:
@@ -784,7 +789,13 @@ def build_graph() -> StateGraph[DeliveryState]:
         "ba_verification", _route({"verified": "regression", "defects": "create_defects"})
     )
     g.add_conditional_edges("create_defects", _route({"repair": "implement"}))
-    g.add_conditional_edges("regression", _route({"ok": "finalize"}))
+    g.add_conditional_edges("regression", _route({"ok": "release_readiness"}))
+    g.add_conditional_edges("release_readiness", _route({"ok": "release_gate"}))
+    g.add_conditional_edges(
+        "release_gate", _route({"approved": "deploy_staging", "wait": "release_gate", "rejected": END})
+    )
+    g.add_conditional_edges("deploy_staging", _route({"ok": "post_deploy_verification"}))
+    g.add_conditional_edges("post_deploy_verification", _route({"ok": "finalize"}))
     g.add_edge("finalize", END)
     return g
 

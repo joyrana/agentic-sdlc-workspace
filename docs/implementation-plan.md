@@ -65,7 +65,7 @@ The 15-step journey from the master prompt §26, mapped to concrete mechanisms:
 | 4 Architect & approvals | Verified (backend; UI pending) | `tests/workflow/test_architecture_and_approvals.py` incl. resume in a separate worker process |
 | 5 Developer agent | Verified (scripted coding agent for the sample; LLM path via mock) | `tests/security/test_sandbox.py` (11 isolation tests), `tests/unit/test_patch_review.py`, `tests/workflow/test_developer_agent.py` |
 | 6 BA verification & QA | Verified | `tests/workflow/test_build_and_verify.py`: defect from real failing test, bounded repair, regression re-run |
-| 7 Release management | Not started | — |
+| 7 Release management | Verified (local staging adapter; GitHub Actions adapter unverified here; production disabled) | `tests/e2e/test_vertical_slice.py` (full journey, blocked release, smoke failure → rollback) |
 | 8 Evaluation & optimization | Not started | — |
 
 ## 4. Assumptions

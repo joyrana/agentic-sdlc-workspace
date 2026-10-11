@@ -184,3 +184,37 @@ class BugTriage(SkillImplementation):
                 }
             )
         return {"defects": defects}
+
+
+class ReleaseReadiness(SkillImplementation):
+    """Deterministic release policy over recorded evidence (see releases.service.evaluate)."""
+
+    strategies: ClassVar[set[str]] = {"heuristic"}
+
+    def run(self, strategy: str, inputs: dict[str, Any], ctx: SkillContext) -> dict[str, Any]:
+        from agentic_sdlc.releases.service import evaluate
+
+        report: dict[str, Any] = evaluate(inputs["facts"])
+        return report
+
+
+class DeploymentValidation(SkillImplementation):
+    """Judge post-deployment results: every integrity, smoke and health check must pass, else roll back."""
+
+    strategies: ClassVar[set[str]] = {"heuristic"}
+
+    def run(self, strategy: str, inputs: dict[str, Any], ctx: SkillContext) -> dict[str, Any]:
+        r = inputs["results"]
+        failed = []
+        if not (r.get("integrity") or {}).get("ok"):
+            failed.append("integrity: " + str((r.get("integrity") or {}).get("detail", "missing")))
+        for section in ("smoke", "health"):
+            checks = r.get(section, [])
+            if not checks:
+                failed.append(f"{section}: no checks defined")
+            failed += [f"{section}: {c['name']}" for c in checks if not c.get("ok")]
+        return {
+            "healthy": not failed,
+            "failed_checks": failed,
+            "recommendation": "keep" if not failed else "rollback",
+        }

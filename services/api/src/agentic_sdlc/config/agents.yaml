@@ -30,5 +30,5 @@ agents:
     tools: [sandbox.exec, repo.workspace, evidence.read, requirements.read]
   shipping:
     name: Shipping Agent
-    skills: []
+    skills: [release-readiness, deployment-validation]
     tools: [evidence.read, release.read, sandbox.exec]

@@ -130,6 +130,66 @@ jobs:
       - run: npm run build
       - run: npm audit --audit-level=high --omit=dev
 
+  e2e:
+    name: Browser E2E (vertical slice)
+    runs-on: ubuntu-24.04
+    needs: [backend, frontend]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: sdlc
+          POSTGRES_PASSWORD: sdlc
+          POSTGRES_DB: sdlc
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sdlc" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://sdlc:sdlc@localhost:5432/sdlc
+      APP_ENV: development
+      DATA_DIR: /var/tmp/asw-e2e-data
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: services/api/pyproject.toml
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -e "services/api"
+          sudo make sandbox-toolchain
+          cd apps/web && npm ci && npx playwright install --with-deps chromium
+      - name: Migrate and seed development users
+        run: |
+          (cd services/api && ../../.venv/bin/alembic upgrade head)
+          .venv/bin/agentic-sdlc seed
+      - name: Start API and worker (worker as root for the namespace sandbox)
+        run: |
+          mkdir -p var/logs
+          nohup .venv/bin/agentic-sdlc api --port 8000 > var/logs/api.log 2>&1 &
+          sudo --preserve-env=DATABASE_URL,APP_ENV,DATA_DIR,PATH nohup .venv/bin/agentic-sdlc worker > var/logs/worker.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf localhost:8000/api/v1/health && break; sleep 1; done
+      - name: Build and run Playwright
+        working-directory: apps/web
+        run: |
+          npm run build
+          npx playwright test
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: e2e-reports
+          path: |
+            apps/web/playwright-report/
+            apps/web/test-results/
+            var/logs/
+
   images:
     name: Container images build
     runs-on: ubuntu-24.04

@@ -18,6 +18,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_sdlc.core.gitenv import git_env
 from agentic_sdlc.core.settings import get_settings
 from agentic_sdlc.execution.sandbox import SandboxResult, get_sandbox
 from agentic_sdlc.execution.workspace import GIT_SAFE, new_dir
@@ -50,7 +51,7 @@ def export_tree(origin: Path, commit: str, dest: Path) -> list[str]:
         capture_output=True,
         check=True,
         timeout=300,
-        env={"PATH": "/usr/bin:/bin", "HOME": str(origin), "GIT_CONFIG_NOSYSTEM": "1"},
+        env=git_env(),
     ).stdout
     names = []
     with tarfile.open(fileobj=io.BytesIO(archive)) as tar:

@@ -1,0 +1,32 @@
+id: deployment-validation
+version: 1.0.0
+name: Deployment validation
+description: >-
+  Judge post-deployment evidence (artifact integrity, smoke and health checks run in the sandbox) and
+  recommend keeping the deployment or rolling back. Missing checks count as failures.
+category: release
+triggers:
+  intents: [validate_deployment]
+  workflow_stages: [post_deploy_verification]
+agents: [shipping]
+required_context: [deployment_results]
+tools: []
+strategies: [heuristic]
+timeout_s: 30
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: none
+implementation: agentic_sdlc.skills_impl.delivery:DeploymentValidation
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [results]
+  properties:
+    results: { type: object, required: [integrity, smoke, health] }
+output_schema:
+  type: object
+  required: [healthy, failed_checks, recommendation]
+  properties:
+    healthy: { type: boolean }
+    failed_checks: { type: array, items: { type: string } }
+    recommendation: { enum: [keep, rollback] }

@@ -21,6 +21,7 @@ const ImplementationPage = lazy(() =>
   import("./pages/ImplementationPage").then((m) => ({ default: m.ImplementationPage })),
 );
 const QualityPage = lazy(() => import("./pages/QualityPage").then((m) => ({ default: m.QualityPage })));
+const ReleasesPage = lazy(() => import("./pages/ReleasesPage").then((m) => ({ default: m.ReleasesPage })));
 const RequirementsPage = lazy(() =>
   import("./pages/RequirementsPage").then((m) => ({ default: m.RequirementsPage })),
 );
@@ -51,6 +52,7 @@ const router = createBrowserRouter([
           { path: "approvals", element: page(<ApprovalsPage />) },
           { path: "implementation", element: page(<ImplementationPage />) },
           { path: "quality", element: page(<QualityPage />) },
+          { path: "releases", element: page(<ReleasesPage />) },
           { path: "settings", element: page(<ProjectSettings />) },
         ],
       },

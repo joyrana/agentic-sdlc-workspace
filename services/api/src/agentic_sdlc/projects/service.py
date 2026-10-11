@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from agentic_sdlc.audit import service as audit
 from agentic_sdlc.auth.service import Principal
 from agentic_sdlc.core.errors import Conflict, NotFound, ValidationFailed
+from agentic_sdlc.core.gitenv import git_env
 from agentic_sdlc.core.settings import get_settings
 from agentic_sdlc.events import service as events
 from agentic_sdlc.orm import Membership, Project, ProjectRepository, User
@@ -194,13 +195,11 @@ GIT_ENV = {
     "GIT_AUTHOR_EMAIL": "platform@agentic-sdlc.invalid",
     "GIT_COMMITTER_NAME": "Agentic SDLC Workspace",
     "GIT_COMMITTER_EMAIL": "platform@agentic-sdlc.invalid",
-    "GIT_CONFIG_NOSYSTEM": "1",
-    "PATH": "/usr/bin:/bin",
 }
 
 
-def git(args: list[str], cwd: Path, *, home: Path | None = None, timeout: int = 120) -> str:
-    env = {**GIT_ENV, "HOME": str(home or cwd)}
+def git(args: list[str], cwd: Path, *, timeout: int = 120) -> str:
+    env = git_env(**GIT_ENV)
     proc = subprocess.run(
         ["git", *args], cwd=cwd, env=env, check=True, capture_output=True, text=True, timeout=timeout
     )

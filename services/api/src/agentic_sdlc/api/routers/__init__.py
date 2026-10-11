@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from agentic_sdlc.api.routers import backlog, projects, quality, requirements, runs, system
+from agentic_sdlc.api.routers import backlog, projects, quality, releases, requirements, runs, system
 
 
 def register_routers(app: FastAPI) -> None:
@@ -12,4 +12,5 @@ def register_routers(app: FastAPI) -> None:
     app.include_router(backlog.router, prefix="/api/v1")
     app.include_router(runs.router, prefix="/api/v1")
     app.include_router(quality.router, prefix="/api/v1")
+    app.include_router(releases.router, prefix="/api/v1")
     app.include_router(backlog.admin_router, prefix="/api/v1")

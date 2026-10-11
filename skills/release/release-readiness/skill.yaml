@@ -1,0 +1,46 @@
+id: release-readiness
+version: 1.0.0
+name: Release readiness
+description: >-
+  Decide release eligibility from recorded evidence only: approvals bound to current content,
+  must-have criteria verified, regression passed on the release commit, no serious open defects, clean
+  patch and credential scans, and a deployment descriptor. Produces blockers and warnings for the approver.
+category: release
+triggers:
+  intents: [release]
+  workflow_stages: [release_readiness]
+agents: [shipping]
+required_context: [evidence]
+tools: []
+strategies: [heuristic]
+timeout_s: 30
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: human_approval
+implementation: agentic_sdlc.skills_impl.delivery:ReleaseReadiness
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [facts]
+  properties:
+    facts:
+      type: object
+      required: [head_commit, architecture_approval, scope_approval, criteria, regression, code_reviews,
+                 open_defects, change_scan, deploy_descriptor]
+output_schema:
+  type: object
+  required: [eligible, blockers, warnings, checks, facts]
+  properties:
+    eligible: { type: boolean }
+    blockers: { type: array, items: { type: string } }
+    warnings: { type: array, items: { type: string } }
+    checks:
+      type: array
+      items:
+        type: object
+        required: [name, status, detail]
+        properties:
+          name: { type: string }
+          status: { enum: [pass, fail, warn] }
+          detail: { type: string }
+    facts: { type: object }
