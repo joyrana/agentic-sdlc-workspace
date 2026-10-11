@@ -154,7 +154,53 @@ def test_events_endpoint_and_summary(client: TestClient, project: dict) -> None:
     assert summary["counts"]["requirements"] == 0
 
 
+def test_event_stream_releases_its_session(project: dict) -> None:
+    """A long-lived stream must not pin a transaction: DDL such as CREATE INDEX CONCURRENTLY
+    waits for every older transaction, which once stalled the worker's first job."""
+    import asyncio
+
+    from starlette.requests import Request
+
+    from agentic_sdlc.api.routers.projects import stream_events
+    from agentic_sdlc.auth.service import authenticate
+    from agentic_sdlc.core.db import SessionLocal
+
+    db = SessionLocal()
+    try:
+        principal = authenticate(db, H("owner")["Authorization"])
+        request = Request({"type": "http", "method": "GET", "path": "/", "headers": []})
+        response = asyncio.run(
+            stream_events(
+                project_id=uuid.UUID(project["id"]),
+                request=request,
+                principal=principal,
+                db=db,
+                after=0,
+                last_event_id=None,
+            )
+        )
+        assert response.media_type == "text/event-stream"
+        assert not db.in_transaction()
+    finally:
+        db.close()
+
+
 def test_validation_error_envelope(client: TestClient) -> None:
     r = client.post("/api/v1/projects", json={"name": ""}, headers=H("owner"))
     assert r.status_code == 422
     assert r.json()["error"]["code"] == "validation_failed"
+
+
+def test_rate_limit_per_token(client: TestClient, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from agentic_sdlc.api.deps import limiter
+    from agentic_sdlc.core.settings import get_settings
+
+    limiter.reset()
+    monkeypatch.setattr(get_settings(), "rate_limit_per_minute", 3)
+    try:
+        codes = [client.get("/api/v1/projects", headers=H("auditor")).status_code for _ in range(4)]
+        assert codes == [200, 200, 200, 429]
+        # Limits are per token: another user is unaffected.
+        assert client.get("/api/v1/projects", headers=H("qa")).status_code == 200
+    finally:
+        limiter.reset()

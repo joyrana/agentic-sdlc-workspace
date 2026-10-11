@@ -149,6 +149,11 @@ const STRATEGY_TEXT: Record<
     color: "severe",
   },
   human: { label: "Human", tip: "Written or edited by a person", color: "informative" },
+  unavailable: {
+    label: "Unavailable",
+    tip: "No capable model or scripted fixture is available; this work will be escalated to a person.",
+    color: "severe",
+  },
 };
 
 /** Shows how an artifact was produced. Required wherever generated output is displayed. */

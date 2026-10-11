@@ -1,0 +1,25 @@
+diff --git a/task_service/service.py b/task_service/service.py
+index 57273e7..eb6517c 100644
+--- a/task_service/service.py
++++ b/task_service/service.py
+@@ -15,7 +15,7 @@ class TaskService:
+         normalized = title.strip()
+         if not normalized:
+             raise ValidationError("title", "Title must not be empty.")
+-        if len(normalized) >= MAX_TITLE_LENGTH:
++        if len(normalized) > MAX_TITLE_LENGTH:
+             raise ValidationError(
+                 "title", f"Title must be at most {MAX_TITLE_LENGTH} characters (got {len(normalized)})."
+             )
+diff --git a/tests/test_title_validation.py b/tests/test_title_validation.py
+index c7bc96f..9702839 100644
+--- a/tests/test_title_validation.py
++++ b/tests/test_title_validation.py
+@@ -25,3 +25,7 @@ def test_rejected_title_is_not_stored() -> None:
+     with pytest.raises(ValidationError):
+         service.create_task("")
+     assert service.list_tasks() == []
++
++
++def test_accepts_title_at_exact_limit() -> None:
++    assert len(TaskService().create_task("x" * 120).title) == 120

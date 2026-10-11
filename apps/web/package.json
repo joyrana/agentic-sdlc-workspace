@@ -9,8 +9,8 @@
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint .",
-    "format": "prettier --write src",
-    "format:check": "prettier --check src",
+    "format": "prettier --write src e2e playwright.config.ts",
+    "format:check": "prettier --check src e2e playwright.config.ts",
     "test": "vitest run",
     "gen:api": "openapi-typescript ../../services/api/openapi.json -o src/api/schema.d.ts",
     "e2e": "playwright test"
@@ -19,6 +19,7 @@
     "@fluentui/react-components": "^9.74.9",
     "@fluentui/react-icons": "^2.0.344",
     "@tanstack/react-query": "^5.104.1",
+    "mermaid": "^12.1.0",
     "openapi-fetch": "^0.17.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

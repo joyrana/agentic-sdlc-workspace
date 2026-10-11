@@ -1,0 +1,19 @@
+# SAMPLE scripted coding scenario for samples/repositories/sample-task-service.
+#
+# Used ONLY when no code model is available and the repository is this sample fixture. The
+# workspace labels every change produced from here as "scripted fixture", never as model output.
+#
+# Attempt 1 implements the title rules but has an off-by-one boundary defect (it rejects a title of
+# exactly 120 characters). Its own tests pass; the independent QA acceptance suite catches it.
+# Attempt 2 fixes the boundary. This exercises the real defect → repair → regression loop.
+fixture: sample-task-service
+description: Title validation for TaskService.create_task (FR-001, FR-002, FR-003, NFR-002)
+covers: [FR-001, FR-002, FR-003, NFR-002]
+attempts:
+  - patch: attempt-1.patch
+    summary: >-
+      Trim titles, reject empty and over-long titles in TaskService.create_task, and give
+      ValidationError a field name and human-readable message.
+  - patch: attempt-2.patch
+    summary: >-
+      Fix the length boundary so a title of exactly 120 characters is accepted, and add a test for it.

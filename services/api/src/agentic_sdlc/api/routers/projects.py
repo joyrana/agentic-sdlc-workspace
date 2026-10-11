@@ -192,6 +192,10 @@ async def stream_events(
 ) -> StreamingResponse:
     """Server-sent events. Resume with `Last-Event-ID` (event `seq`). Clients deduplicate by `event_id`."""
     authorize(db, principal, project_id, "project.read")
+    # Release the request's session now. Holding its transaction for the life of the stream would
+    # pin locks and block DDL that waits for older transactions (e.g. CREATE INDEX CONCURRENTLY in
+    # the checkpointer's one-time setup). Each poll below opens and closes its own session.
+    db.close()
     start = int(last_event_id) if last_event_id and last_event_id.isdigit() else after
 
     def fetch(cursor: int) -> list[dict[str, object]]:

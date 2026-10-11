@@ -7,8 +7,8 @@ type Summary = Schemas["ProjectSummary"];
 
 const useStyles = makeStyles({
   grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+    display: "flex",
+    flexWrap: "wrap",
     gap: "1px",
     backgroundColor: tokens.colorNeutralStroke2,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
@@ -17,6 +17,7 @@ const useStyles = makeStyles({
     marginBottom: tokens.spacingVerticalXXL,
   },
   cell: {
+    flex: "1 1 160px",
     backgroundColor: tokens.colorNeutralBackground1,
     padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalL}`,
     display: "flex",

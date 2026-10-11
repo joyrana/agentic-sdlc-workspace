@@ -1,0 +1,41 @@
+id: repository-exploration
+version: 1.0.0
+name: Repository exploration
+description: >-
+  Inspect a repository read-only (git objects, static analysis; nothing is executed) and summarize
+  languages, frameworks, test command, module outlines, conventions and deployment descriptors.
+category: architecture
+triggers:
+  intents: [inspect_repository]
+  workflow_stages: [analyze_repository]
+agents: [architect]
+required_context: [repository]
+tools: [repo.read]
+strategies: [heuristic]
+timeout_s: 120
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: none
+implementation: agentic_sdlc.skills_impl.architecture:RepositoryExploration
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [repository_id]
+  properties:
+    repository_id: { type: string, format: uuid }
+output_schema:
+  type: object
+  required: [repository_id, commit, file_count, languages, frameworks, test_command, tests, modules,
+             constructor_call_sites, conventions, deploy_descriptor]
+  properties:
+    repository_id: { type: string }
+    commit: { type: string, pattern: "^[0-9a-f]{40}$" }
+    file_count: { type: integer, minimum: 0 }
+    languages: { type: object, additionalProperties: { type: integer } }
+    frameworks: { type: array, items: { type: string } }
+    test_command: { type: array, items: { type: string } }
+    tests: { type: array, items: { type: string } }
+    modules: { type: array, items: { type: object, required: [path] } }
+    constructor_call_sites: { type: object, additionalProperties: { type: integer } }
+    conventions: { type: array, items: { type: string } }
+    deploy_descriptor: { type: boolean }

@@ -1,0 +1,42 @@
+id: regression-testing
+version: 1.0.0
+name: Regression and acceptance testing
+description: >-
+  Run the repository's tests, plus the QA-owned acceptance suite when one exists, for an exact
+  commit inside the sandbox, and return machine-readable evidence cross-checked against the runner.
+category: testing
+triggers:
+  intents: [test]
+  workflow_stages: [qa_tests, regression]
+agents: [qa]
+required_context: [commit]
+tools: [sandbox.exec]
+strategies: [heuristic]
+timeout_s: 600
+retry: { max_attempts: 1, backoff_s: 0 }
+approval_level: none
+implementation: agentic_sdlc.skills_impl.delivery:RegressionTesting
+provenance: { owner: platform, created: "2026-10-10" }
+input_schema:
+  type: object
+  additionalProperties: false
+  required: [repository_id, commit, suite]
+  properties:
+    repository_id: { type: string, format: uuid }
+    commit: { type: string, pattern: "^[0-9a-f]{40}$" }
+    suite: { enum: [developer, acceptance, regression, smoke] }
+output_schema:
+  type: object
+  required: [status, totals, cases, log, command, sandbox, commit, tampered_files, problems]
+  properties:
+    status: { enum: [passed, failed, error] }
+    totals: { type: object }
+    cases:
+      type: array
+      items: { type: object, required: [nodeid, outcome, criteria] }
+    log: { type: string }
+    command: { type: array, items: { type: string } }
+    sandbox: { type: object }
+    commit: { type: string }
+    tampered_files: { type: array, items: { type: string } }
+    problems: { type: array, items: { type: string } }
